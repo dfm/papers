@@ -1,0 +1,462 @@
+\documentclass[12pt,preprint]{aastex}
+\usepackage{amssymb,amsmath,color}
+
+% code listings setup
+\usepackage{listings}
+\lstset{ %
+language=SQL,
+basicstyle=\ttfamily\scriptsize,
+tabsize=4,
+keywordstyle=\bfseries,
+identifierstyle=\bfseries,
+frame=single,
+}
+
+
+% Specialized text styles
+\newcommand{\project}[1]{\textsl{#1}}
+\newcommand{\SDSS}{\project{SDSS}}
+\newcommand{\foreign}[1]{\emph{#1}}
+\newcommand{\etal}{\foreign{et\,al.}}
+\newcommand{\etc}{\foreign{etc.}}
+
+% Convenience functions for referencing equations, figures, etc.
+% NOTE: the reference key is automatically prefixed with fig:, eq:, etc.
+\newcommand{\figlabel}[1]{\label{fig:#1}}
+\newcommand{\Fig}[1]{Figure \ref{fig:#1}}
+\newcommand{\fig}[1]{figure \ref{fig:#1}}
+\newcommand{\eqlabel}[1]{\label{eq:#1}}
+\renewcommand{\eqref}[1]{\ref{eq:#1}}
+\newcommand{\Eq}[1]{Equation (\eqref{#1})}
+\newcommand{\eq}[1]{equation (\eqref{#1})}
+
+% math symbols
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\like}{\mathscr{L}}
+\newcommand{\paramvector}[1]{\boldsymbol{#1}}
+\newcommand{\bvec}[1]{\paramvector{#1}}
+\newcommand{\normal}[3]{\mathcal{N} (#1 | #2, #3)}
+\newcommand{\grad}[2]{\frac{\partial #1}{\partial #2}}
+\renewcommand{\Pr}{\mathrm{p}}
+
+% model parameters
+\newcommand{\model}     {\ensuremath{\paramvector{\Theta}} }
+\newcommand{\data}      {\ensuremath{\mathbf{X}} }
+\newcommand{\X}         {\ensuremath{\mathbf{X}} }
+\newcommand{\fstar}     {\ensuremath{f^*} }
+\newcommand{\fstarvec}  {\ensuremath{\mathbf{\fstar}} }
+\newcommand{\fzero}     {\ensuremath{f^0}}
+\newcommand{\fzerovec}  {\ensuremath{\mathbf{\fzero}} }
+\newcommand{\jabs}      {\ensuremath{\delta} }
+\newcommand{\jrel}      {\ensuremath{\eta} }
+\newcommand{\jitter}[1] {\ensuremath{\delta_{#1}^2} }
+\newcommand{\Stot}      {\ensuremath{\sigma_{i\alpha}^2 + \jitter{i\alpha}} }
+\newcommand{\Sbad}      {\ensuremath{\Sigma_\mathrm{bad}^2} }
+\newcommand{\Sbadtot}   {\ensuremath{\sigma_{i\alpha}^2 + \jitter{i\alpha} + \Sbad} }
+\newcommand{\Qbad}      {\ensuremath{Q_\mathrm{bad}} }
+\newcommand{\Qvar}      {\ensuremath{Q_\mathrm{var}} }
+\newcommand{\Svar}      {\ensuremath{S} }
+\newcommand{\Svartot}   {\ensuremath{\sigma_{i\alpha}^2 + \jitter{i\alpha} + \Svar} }
+\newcommand{\oddsvar}   {\ensuremath{r^\mathrm{var}} }
+\newcommand{\oddsbad}   {\ensuremath{r^\mathrm{bad}} }
+\newcommand{\good}      {\ensuremath{H_\mathrm{g}}}
+\newcommand{\bad}       {\ensuremath{H_\mathrm{b}}}
+\newcommand{\const}     {\ensuremath{H_\mathrm{c}}}
+\newcommand{\var}       {\ensuremath{H_\mathrm{v}}}
+\newcommand{\pconst}    {\ensuremath{\Pr_\mathrm{c} (\X_\alpha | \model) }}
+\newcommand{\pvar}      {\ensuremath{\Pr_\mathrm{v} (\X_\alpha | \model) }}
+\newcommand{\pbad}      {\ensuremath{\Pr_\mathrm{b} (\X_{i\alpha} | \model)} }
+\newcommand{\pvarbad}   {\ensuremath{\Pr_\mathrm{v,b} (\X_{i\alpha} | \model)} }
+\newcommand{\pvargood}  {\ensuremath{\Pr_\mathrm{v,g} (\X_{i\alpha} | \model)} }
+\newcommand{\pconstbad} {\ensuremath{\Pr_\mathrm{c,b} (\X_{i\alpha} | \model)} }
+\newcommand{\pconstgood}{\ensuremath{\Pr_\mathrm{c,g} (\X_{i\alpha} | \model)} }
+
+% units
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+
+\begin{document}
+
+\title{Recalibration of SDSS Stripe 82}
+\author{Daniel~Foreman-Mackey\altaffilmark{1,2} \&
+        David~W.~Hogg\altaffilmark{1,3}, others}
+\altaffiltext{1}{Center for Cosmology, Particle Physics,
+                         Department of Physics, New York University,
+                         4 Washington Place, New York, NY, 10003, USA}
+\altaffiltext{2}{to whom correspondence should be addressed:
+                 danfm@nyu.edu}
+\altaffiltext{3}{Max-Planck-Institut f\"ur Astronomie,
+                 K\"onigstuhl 17, D-69117, Heidelberg, Germany}
+
+\begin{abstract}
+
+We develop a general probabilistic framework for the self-calibration of multi-
+epoch astronomical imaging.  This model quantitatively accounts for variable stars,
+bad (or missing) observations and underestimated uncertainties.  Using this framework,
+we re-calibrate Stripe 82 from the Sloan Digital Sky Survey (\SDSS).  Stripe 82 is
+a $\sim 300$ square-degree patch that was imaged $\gtrsim 50$ times over a 10 year
+baseline.  Many runs were taken in non-photometric conditions with non-trivial
+spatial and time varying conditions.  We define photometricity criteria based on
+the scatter in the light curves of a set of standard stars and the width of the
+stellar locus (DFM: be more specific?).  Using this model we re-calibrate the
+photometry in Stripe 82 to better than $2\%$ accuracy in all 5 bands (???) and
+recover X\% of the officially non-photometric runs.
+We make the calibration information through a public interface along with the
+light-curves for {\em some huge number} of stars.
+
+\end{abstract}
+
+\keywords{
+}
+
+\section{Introduction}
+
+\section{Re-calibration}
+
+\section{Queries}
+
+\lstinputlisting[float=tp,caption=The fields query]{queries/fields.sql}
+\lstinputlisting[float=tp,caption=The calibration star query]{queries/stars.sql}
+\lstinputlisting[float=tp,caption=The Lyrae candidate query]{queries/lyrae.sql}
+
+
+%To calibrate the photometric zero-point of each field where a particular RR
+%Lyrae candidate was observed, we select (from CAS) all stars with $g < 20$
+%within a radius $3^\prime$ (Note: these cuts are up for discussion), perform
+%the following analysis.  In what follows, this is the sample of stars that we
+%will discuss.
+
+\subsection{Calibration Model}
+
+(Note: Roman indices will indicate the epoch number, Greek indices will
+label the star.)
+
+We measure the flux of a star $\alpha$ at epoch $i$, $C_{i\alpha}$ with
+variance $\sigma_{i\alpha}^2$.  Given these measurements of $N$ stars observed
+at $M$ epochs, we wish to construct a probability distribution for the data given
+parameters describing the intrinsic flux of each star, the zero-point of each
+observation.
+
+% The set of observations all epochs for star $\alpha$ is called
+% $\bvec{D}_\alpha$, the set of all observations at a single epoch $i$ is
+% $\bvec{D}_i$.
+
+The simplest model of the full dataset $\data \equiv \{ C_{i\alpha},
+\sigma^2_{i\alpha} \}$ includes an intrinsic flux $\fstar_\alpha$ for
+each star (assumed constant at all epochs), a multiplicative zero-point
+$\fzero_i$ (assumed constant across a given field).  Therefore,
+$\bvec{\fstar}$ is a vector of length $N$, $\bvec{\fzero}$ has
+length $M$, the model generates a proposal matrix ${\tilde{C}_{i\alpha}}
+\equiv \bvec{\fzero} \otimes \bvec{\fstar}^T$ which is directly
+compared to the data $C_{i\alpha}$ assuming Gaussian uncertainties.  This
+yields the likelihood function for the full set of data, given a model
+$\model$:
+\begin{equation}
+    \Pr (\data | \model) = \prod_{i=1} ^{M}
+        \prod_{\alpha=1} ^{N} \normal{C_{i\alpha}}{\fzero_i
+        \fstar_\alpha}{\sigma_{i\alpha}^2}
+\end{equation}
+
+It is likely that the measured uncertainties are underestimated, therefore, we
+can also include ``jitter'' added to the quoted variance.  This allows the true
+uncertainty to be inferred from the data even if the quoted value is
+underestimated.
+\begin{equation} \eqlabel{calib-likelihood2}
+    \Pr (\data | \model) = \prod_{i=1}^{M} \prod_{\alpha=1} ^{N}
+        \normal{C_{i\alpha}}{\fzero_i
+        \fstar_\alpha}{\sigma_{i\alpha}^2 + \jitter{i\alpha}}
+\end{equation}
+where
+\begin{equation}
+    \jitter{i\alpha} \equiv \jabs^2 + (\jrel \, \fzero_{i}
+        \fstar_\alpha)^2
+\end{equation}
+is the jitter, $\jabs$ and $\jrel$ are model parameters.
+
+To generalize the model to include the possibility that not all stars are
+useful for calibration (perhaps they vary intrinsically), we can generate a
+``mixture model'' containing the distribution from equation
+\eq{calib-likelihood2}, a general background distribution with variance
+$\Svar$.  The background model is included with a probability $\Qvar$:
+\begin{equation}
+    \eqlabel{fulllikelihood}
+    \Pr (\data | \model) = \prod_{\alpha=1} ^{N} \left \{ [1-\Qvar]
+        \pconst + \Qvar
+        \pvar \right \}
+\end{equation}
+where
+\begin{equation}
+    \pconst \equiv \Pr(\data | \model, \const) \, \mathrm{and} \,
+    \pvar \equiv \Pr(\data | \model, \var)
+\end{equation}
+are the likelihoods of the data for star $\alpha$ given the model parameters and
+the hypothesis that the star is constant (\const) or variable (\var) respectively.
+\Eq{fulllikelihood} gives the likelihood {\em marginalized}
+over the choice of \var\ or \const\ for each star \citep[e.g.][]{Hogg:2010}.
+
+Since some observations
+of a particular star might not be useful for calibration, we model
+$\pconst$ and $\pvar$ as mixtures with background
+populations of ``bad'' observations included with the prior probability $\Qbad$:
+\begin{equation}
+    \pconst \equiv \prod_{i=1}^M \left \{
+    [1-\Qbad] \pconstgood + \Qbad \pconstbad \right \}
+\end{equation}
+and
+\begin{equation}
+    \pvar \equiv \prod_{i=1}^M \left \{
+    [1-\Qbad] \pvargood + \Qbad \pvarbad \right \}
+\end{equation}
+where
+\begin{eqnarray}
+    \pconstgood & \equiv &
+        \normal{C_{i\alpha}}{\fzero_i \fstar_\alpha}{\sigma_{i\alpha}^2 +
+            \jitter{i\alpha}} \\
+    \pconstbad \equiv \pvarbad \equiv \pbad & \equiv &
+        \normal{C_{i\alpha}}{\fzero_i \fstar_\alpha}{\sigma_{i\alpha}^2 +
+        \jitter{i\alpha} + \Sbad} \\
+    \pvargood & \equiv &
+        \normal{C_{i\alpha}}{\fzero_i \fstar_\alpha}{\sigma_{i\alpha}^2 +
+        \jitter{i\alpha} + [\Svar \fzero_i \fstar_\alpha]^2} \\
+\end{eqnarray}
+are assumed Gaussian.
+
+To summarize, this model has $N+M+6$ parameters:
+\begin{equation}
+    \model = \{ \fstarvec, \fzerovec, \jabs, \jrel, \Sbad, \Qbad, \Svar, \Qvar \}
+\end{equation}
+where \fstarvec, \fzerovec are intrinsic properties of the stars and runs
+respectively, \jabs, \jrel describe the noise model for the flux measurements,
+\Sbad, \Qbad parameterize the background ``bad measurement'' model and \Svar,
+\Qvar specify the variability model.  In practice, the values of the six nuisance
+parameters are inferred by finding the maximum likelihood (or maximum
+\foreign{a posteriori}) values.
+
+
+\subsection{Odds Ratios}
+
+This model also yields the probability that a specific star is intrinsically
+variable, that a given measurement is bad.  These quantities are conveniently
+quantified by the odds ratios
+\begin{equation}
+    \oddsvar_\alpha \equiv \frac{\Qvar \pvar}{[1-\Qvar] \pconst}
+\end{equation}
+and
+\begin{eqnarray}
+    \oddsbad_{i\alpha} & \equiv & \frac{\Qbad}{1-\Qbad}
+        \frac{[1-\Qvar] \pconst \pconstbad + \Qvar \pvar \pvarbad}
+             {[1-\Qvar] \pconst \pconstgood+ \Qvar \pvar \pvargood} \\
+    & = & \frac{\Qbad}{1-\Qbad} \frac{\pbad \{ [1-\Qvar] \pconst + \Qvar \pvar \}}
+             {[1-\Qvar] \pconst \pconstgood+ \Qvar \pvar \pvargood}
+\end{eqnarray}
+Both $\oddsvar$, $\oddsbad$ will be in the range $ [0,\infty ) $ with larger
+values indicating that the star is more likely to be variable or the measurement is
+more likely to be bad (respectively).
+
+
+\subsection{Constraints From Co-Added Analysis}
+
+Up to this point, our photometric model, while completely self-consistent, will
+not measure magnitudes that are meaningful outside the model.  It is reasonable
+to require that our results are consistent with the magnitudes measured in
+the co-added photometric catalogs provided by the \SDSS\ Catalog Archive Server
+(CAS).  To achieve this, we include a further on the magnitude produced by the
+model by multiplying \eq{modelprob} by
+% TODO: Justify the choice of 0.5mag for scatter in this constraint
+\begin{equation}
+    p_\mathrm{CAS} (\data | \model) = \normal{m_{g,\alpha}}{m^*_\alpha}{0.5 \unit{mag}}
+\end{equation}
+where $m_{g,\alpha}$ is the $g$-band magnitude from CAS, $m^*_\alpha
+\equiv -2.5\log_{10} \fstar_\alpha$ is the apparent magnitude generated
+by the model.
+
+
+
+\subsection{Extending the Model Across the Full Dataset}
+
+The zero point of the \SDSS~camera should only vary slowly, smoothly with
+time as the camera scans across the sky.  In the \SDSS~database, these coherent
+datasets are called ``runs'', they sweep in right ascension at an
+approximately constant declination.  We also split the data by ``camera column''.
+We then optimize the above model for stars found in a projected radius $R$ around
+for a grid of points with spacing $\Delta \theta$ in R.A.~along the length of
+a run, interpolate between points using a cubic spline.
+
+To determine the optimal values of $R$, $\Delta \theta$, we find the values
+that maximize the leave-one-out cross-validation likelihood.  The cross-validation
+likelihood is calculated by dividing the data points into $N$ groups and
+calculating the likelihood of observing one group given a model optimized for
+the set of the $N-1$ other groups. In practice, we use the mean likelihood over
+all $N \equiv 10$ iterations of this technique for a grid in the space of $R$
+and $\Delta \theta$.
+
+
+
+\bibliographystyle{apj}
+
+\begin{thebibliography}{90}
+
+\bibitem[Hogg \etal(2010))]{Hogg:2010}
+{Hogg}, D.~W., {Bovy}, J., \& {Lang}, D.,
+2010, arXiv:1008.4686
+% http://adsabs.harvard.edu/abs/2010arXiv1008.4686H
+
+\bibitem[Sesar \etal(2010)]{Sesar:2010}
+{Sesar}, B., {Ivezic}, Z., {Grammer}, S.~H., {Morgan}, D.~P., {Becker}, A.~C.,
+{Jurić}, M., {De Lee}, N., {Annis}, J., {Beers}, T.~C., {Fan}, X.,
+{Lupton}, R.~H., {Gunn}, J.~E., {Knapp}, G.~R., {Jiang}, L., {Jester}, S.,
+{Johnston}, D.~E., {Lampeitl}, H.,
+2010, \apj, 708, 717
+% http://adsabs.harvard.edu/abs/2010ApJ...708..717S
+
+\end{thebibliography}
+
+\appendix
+
+\section{Gradients of the Likelihood Function}
+
+The gradient of \eq{fulllikelihood} with respect to \model can be easily
+calculated as follows.
+
+\subsection{Gradients with respect to physical quantities}
+
+The gradient of the likelihood function with respect to the (modelled)
+{\bf intrinsic stellar flux} is calculated using
+\begin{equation}
+    \grad{\ln \Pr (\data | \model)}{\fstar_\alpha} =
+        \frac{(1-\Qvar)\grad{\pconst}{\fstar_\alpha} + \Qvar \grad{\pvar}{\fstar_\alpha}}
+            { (1-\Qvar)\pconst + \Qvar\pvar}
+\end{equation}
+where
+\begin{equation} \eqlabel{dpconstdalpha}
+    \grad{\pconst}{\fstar_\alpha} = \pconst \grad{\ln \pconst}{\fstar_\alpha}
+\end{equation}
+and
+\begin{equation}
+    \grad{\ln \pconst}{\fstar_\alpha} =
+        \sum_{i = 1}^{M}
+            \frac{(1-\Qbad)\grad{\pconstgood}{\fstar_\alpha}
+                + \Qbad \grad{\pconstbad}{\fstar_\alpha}}{ (1-\Qbad)
+            \pconstgood  + \Qbad
+            \pconstbad}.
+\end{equation}
+The derivatives in this equation are simply derivatives of the respective normal
+distributions:
+\begin{equation} \eqlabel{dpconstgooddalpha}
+    \grad{\pconstgood}{\fstar_\alpha} = \fzero_i \left [
+        \frac{C_{i\alpha} - \fstar_\alpha \fzero_i}{\Stot} \right ]
+        \pconstgood
+\end{equation}
+and
+\begin{equation} \eqlabel{dpconstbaddalpha}
+    \grad{\pconstbad}{\fstar_\alpha} = \fzero_i \left [
+        \frac{C_{i\alpha} - \fstar_\alpha \fzero_i}{\Sbadtot} \right ]
+        \pconstbad.
+\end{equation}
+In analogy to equations \eqref{dpconstdalpha} through \eqref{dpconstbaddalpha},
+we can calculate $\grad{\pvar}{\fstar_\alpha}$ by replacing the variance in the
+denominator of \eq{dpconstgooddalpha} by \Svartot.
+
+Now, we find the gradient of the likelihood with respect to the {\bf photometric
+zero point}:
+\begin{equation}
+    \grad{\ln \Pr (\data | \model)}{\fzero_i} = \sum_{\alpha=1}^{N}
+        \frac{(1-\Qvar)\grad{\pconst}{\fzero_i} + \Qvar \grad{\pvar}{\fzero_i}}
+            { (1-\Qvar)\pconst + \Qvar\pvar}
+\end{equation}
+where
+\begin{equation}
+    \grad{\pconst}{\fzero_i} = \pconst \times
+            \frac{(1-\Qbad)\grad{\pconstgood}{\fzero_i}
+                + \Qbad \grad{\pconstbad}{\fzero_i}}{ (1-\Qbad)
+            \pconstgood  + \Qbad
+            \pconstbad}.
+\end{equation}
+The derivatives of the normal distributions will be equations \eqref{dpconstgooddalpha}
+and \eqref{dpconstbaddalpha} above with $\fstar_\alpha$, $\fzero_i$ swapped.
+
+
+\subsection{Gradients with respect to the nuisance parameters}
+
+First, the gradient of the likelihood function with respect to the {\bf prior
+probability of a star being variable} is simply
+\begin{equation}
+    \grad{\ln \Pr (\data | \model)}{\Qvar} =
+        \sum_{\alpha = 1}^{N} \frac{\pvar - \pconst}{ (1-\Qvar)
+            \pconst  + \Qvar
+            \pvar}
+\end{equation}
+
+The gradient with respect to the {\bf prior probability that an observation is
+bad} is
+\begin{equation}
+    \grad{\log \Pr (\data | \model)}{\Qbad} =
+        \sum_{\alpha = 1}^{N} \frac{(1-\Qvar)
+            \grad{\pconst}{\Qbad}  + \Qvar
+            \grad{\pvar}{\Qbad}}{ (1-\Qvar) \pconst  + \Qvar \pconst}
+\end{equation}
+where
+\begin{equation}
+    \grad{\ln \pconst}{\Qbad} = \pconst \times
+        \sum_{i = 1}^{M} \frac{\pconstbad - \pconstgood}{ (1-\Qbad)
+            \pconstgood  + \Qbad
+            \pconstbad}.
+\end{equation}
+Similarly,
+\begin{equation}
+    \grad{\pvar}{\Qbad} = \pvar \times
+        \sum_{i = 1}^{M} \frac{\pvarbad - \pvargood}{ (1-\Qbad)
+            \pvargood  + \Qbad
+            \pvarbad}.
+\end{equation}
+
+Finally, the gradients with respect to the model variances ($V^2 = \jrel^2, \jabs^2, \Svar, \Sbad$)
+are calculated as
+\begin{equation}
+    \grad{\ln \Pr (\data | \model)}{V^2} = \sum_{\alpha=1}^{N}
+        \frac{(1-\Qvar)\grad{\pconst}{V^2} + \Qvar \grad{\pvar}{V^2}}
+            { (1-\Qvar)\pconst + \Qvar\pvar}
+\end{equation}
+where
+\begin{equation}
+    \grad{\ln \pconst}{V^2} =
+        \sum_{i = 1}^{M}
+            \frac{(1-\Qbad)\grad{\pconstgood}{V^2}
+                + \Qbad \grad{\pconstbad}{V^2}}{ (1-\Qbad)
+            \pconstgood  + \Qbad
+            \pconstbad}.
+\end{equation}
+and
+\begin{equation}
+    \grad{\pconstgood}{V^2} = \grad{(\Stot)}{V^2} \times
+        \left [ \frac{(C_{i\alpha} - \fstar_\alpha \fzero_i)^2-(\Stot)}{2(\Stot)} \right ]
+        \times \pconstgood,
+\end{equation}
+\foreign{etc.}
+
+
+
+
+% =========== %
+%   FIGURES   %
+% =========== %
+
+\clearpage
+% \begin{figure}
+%     \begin{center}
+%         \includegraphics[width=\textwidth]{lyraelc}\\
+%         \includegraphics[width=\textwidth]{starlc}
+%     \end{center}
+%     \caption[]{\figlabel{lyraelc}
+%         Two representative light curves for stars calibrated with \eq{modelprob}.
+%         The top curve is a known RR Lyrae \citep{Sesar:2010} with a large value
+%         of $\oddsvar$, the bottom is a calibration star.  The colors of the
+%         points is related to the value of $\oddsbad$ for each observation (blue
+%         = smaller $\oddsbad$, red = larger $\oddsbad$).  The black line shows
+%         the value of $m^*$, the red dashed line is the mean $m_g$ from CAS.
+%     }
+% \end{figure}
+
+
+\end{document}
+
+

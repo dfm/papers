@@ -9,3 +9,4 @@
 *.sty
 *.bst
 .DS_Store
+*/.svn
