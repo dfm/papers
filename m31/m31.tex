@@ -1,0 +1,1122 @@
+%%
+%% Beginning of file 'm31.tex'
+%%
+%% Created Jan. 6, 2011 by Daniel Foreman-Mackey
+%%
+
+\documentclass[preprint]{aastex}
+
+\usepackage{amssymb,amsmath}
+
+\usepackage{color,hyperref}
+\definecolor{linkcolor}{rgb}{0,0,0.5}
+\hypersetup{
+    colorlinks=true,
+    linkcolor =linkcolor,
+    citecolor =linkcolor,
+    filecolor =linkcolor,
+    urlcolor  =linkcolor
+}
+
+\usepackage{multirow}
+
+%% My definitions
+\newcommand{\foreign}[1]{\emph{#1}}
+\newcommand{\etal}{\foreign{et\,al.}}
+\newcommand{\eg}{\foreign{e.g.}}
+\newcommand{\etc}{\foreign{etc.}}
+
+\newcommand{\project}[1]{\emph{#1}}
+\newcommand{\sdss}{\project{SDSS}}
+\newcommand{\pandas}{\project{PAndAS}}
+
+\newcommand{\andromeda}{\object[M31]{Andromeda}}
+
+% Convenience functions for referencing equations, figures, etc.
+% NOTE: the reference key is automatically prefixed with fig:, eq:, etc.
+\newcommand{\figlabel}[1]{\label{fig:#1}}
+\newcommand{\Fig}[1]{Figure \ref{fig:#1}}
+\newcommand{\fig}[1]{figure \ref{fig:#1}}
+\newcommand{\tablabel}[1]{\label{tab:#1}}
+\newcommand{\Tab}[1]{Table \ref{tab:#1}}
+\newcommand{\tab}[1]{table \ref{tab:#1}}
+\newcommand{\eqlabel}[1]{\label{eq:#1}}
+\newcommand{\Eq}[1]{Equation \ref{eq:#1}}
+\newcommand{\eq}[1]{equation \ref{eq:#1}}
+
+% math symbols
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\bvec}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\paramvector}[1]{\bvec{#1}}
+\newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 | #2, #3)}}
+
+% Bayesianism
+\newcommand{\model}{\paramvector{\Theta}}
+\newcommand{\data}{\paramvector{X}}
+\newcommand{\prob}{\ensuremath{p}}
+\newcommand{\probability}[2]{\ensuremath{\prob ( #1 | #2 )}}
+\newcommand{\likelihood}{\probability{\data}{\model}}
+\newcommand{\posterior}{\probability{\model}{\data}}
+\newcommand{\prior}{\ensuremath{\prob (\model)}}
+
+% distribution functions
+\newcommand{\df}{f}
+\newcommand{\dfs}[1]{\df_\mathrm{#1}}
+\newcommand{\dfhalo}{\dfs{halo}}
+\newcommand{\dfbulge}{\dfs{bulge}}
+\newcommand{\dfdisk}{\dfs{disk}}
+
+\newcommand{\E}{\ensuremath{E}}
+\newcommand{\Lz}{\ensuremath{L_Z}}
+\newcommand{\Ez}{\ensuremath{E_Z}}
+
+% model parameters
+\newcommand{\halo}{\mathrm{h}}
+\newcommand{\bulge}{\mathrm{b}}
+\newcommand{\disk}{\mathrm{d}}
+\newcommand{\mass}{\ensuremath{M}}
+
+\newcommand{\ah}{\ensuremath{a_\halo}}
+\newcommand{\vh}{\ensuremath{\sigma_\halo}}
+\newcommand{\nh}{\ensuremath{n_\halo}}
+\newcommand{\Md}{\ensuremath{\mass_\disk}}
+\newcommand{\Rd}{\ensuremath{a_\disk}}
+\newcommand{\vb}{\ensuremath{\sigma_\bulge}}
+\newcommand{\Rb}{\ensuremath{a_\bulge}}
+\newcommand{\nb}{\ensuremath{n_\bulge}}
+
+% velocity corrections
+\newcommand{\vlos}{\ensuremath{v_\mathrm{los}}}
+\newcommand{\vt}{\ensuremath{v_\mathrm{t}}}
+\newcommand{\vrel}[2]{\ensuremath{\bvec{v}_{\mathrm{#1},\mathrm{#2}}}}
+
+% random other stuff
+\newcommand{\Rband}{\emph{R}-band}
+\newcommand{\Kband}{\emph{R}-band}
+
+% units
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\kpc}{\unit{kpc}}
+
+\begin{document}
+
+\title{The Mass of \andromeda: A Fully Self-Consistent Dynamical Model}
+
+% \slugcomment{To be submitted for publication in ApJ}
+
+\author{Daniel Foreman-Mackey\altaffilmark{\ref{affil:dfm}}
+    \& Lawrence M. Widrow}
+\affil{Department of Physics, Engineering Physics, and Astronomy,
+       Queen's University, Kingston, ON K7L 3N6, Canada}
+
+\altaffiltext{1}{\label{affil:dfm}Current address:
+    Center for Cosmology and Particle Physics, Department of Physics,
+    New York University,
+    4 Washington Place, New York, NY 10003, USA; \texttt{danfm@nyu.edu}}
+
+\begin{abstract}
+
+    Due to it's proximity, there is a wealth of kinematic measurements of M31
+    at all scales. These datasets provide an extremely detailed snapshot of the
+    dynamics of the galaxy at both dark matter and baryon dominated scales. We
+    compile a catalog of satellite galaxy kinematics in the outer reaches of the
+    dark matter halo and the HI rotation curve and (K-, I-band) surface brightness
+    profile at smaller radii.
+    To combine these heterogeneous datasets into a self-consistent probabilistic
+    analysis, we develop a multicomponent, axisymmetric, semi-analytic, dynamical
+    generative galaxy model and marginalize over the large experimental
+    uncertainties and many nuisance parameters to infer the structural parameters
+    of M31.
+    We find that when we only consider so-called ``non-informative''
+    parameterizations of our prior knowledge about the nuisance parameters, the
+    data does not contain enough information to provide useful constraints on
+    the physical galaxy parameters. Instead, by using physically motivated
+    prior information about the stellar mass-to-light ratios, we find excellent
+    constraints M31's structural parameters (TODO: what does this mean and how do
+    we quantify it). TODO: describe the galaxy models here qualitative and
+    quantitatively.
+
+    To simultaneously marginalize and sample the posterior distribution, we
+    we generalize and parallelize the affine invariant Markov chain Mont Carlo
+    algorithm developed by Goodman \& Weare. This algorithm has only one tuning
+    parameter --- instead of the $D\,(D+1)/2$ hyperparameters that must
+    be fine-tuned using the standard methods --- making an expensive ``burn-in''
+    phase unnecessary. This algorithm is especially useful in problems (like this
+    one) where the likelihood evaluations require an expensive numerical
+    computation.
+
+\end{abstract}
+
+\keywords{
+methods: data analysis
+---
+methods: statistical
+---
+Local Group
+---
+galaxies: kinematics and dynamics
+---
+galaxies: structure
+}
+
+
+% ======================== %
+%
+%           TODO
+%
+% ======================== %
+%
+% 1.
+
+
+
+
+
+
+
+
+
+
+
+% -------- BODY --------
+
+\defcitealias{ew}{EW00}
+\defcitealias{vdm}{vdMG08}
+
+\section{Introduction}
+
+\begin{itemize}
+
+\item Use of satellite galaxies as a probe of the Galactic potential
+has had a long history dating back to Hartwick and Sargent (1978) (see
+Little and Tremaine for an historical overview and further
+references).  More recently, the methods have been applied to M31 (the
+only other galaxy where accurate distances and velocities, relative to
+the host galaxy, have been observed.  Early methods used simple mass
+estimators.
+
+\item Little and Tremaine introduced the method of Bayesian inference
+to the problem for the Milky Way.  BI allows one to estimate
+confidence intervals.  Furthermore, Bayesian inference allows one to
+properly propagate errors in measurements (marginalization).  As well,
+LT modelled the tracer population using a distribution function.
+
+\item Further step was taken by Kochanek (1996) who used a more ``realistic''
+and flexible distribution function (Jaffe model).
+
+\item Evans and Wilkinson (1999) present the first such analysis of
+M31.  Most of the previous estimates of M31 mass were based either on
+the rotation curve, which extends to only 30 kpc.  Courteau and van
+den Bergh (1999) used simple mass estimators for a sample of seven
+satellites.
+
+\item The basic idea of the Bayesian treatment is to build a
+generative model for both the distribution function of the tracers and
+the gravitational potential and then marginalize over the tracer DF.
+
+\end{itemize}
+
+\section{The Data}
+
+\subsection{Satellite galaxy kinematics}
+
+Table \ref{tab:satdata} lists the relevant information for the 23 satellite
+galaxies in our sample.  This sample was constructed by supplementing the
+catalogues from \citet{Evans:2000a} and \cite{McConnachie:2006} with more
+recently discovered dwarf galaxies and updated distance and velocity measurements.
+We restrict our sample to galaxies with measurements of both line-of-sight
+velocity and distance.
+
+\object[And IX]{Andromeda IX} and \object[And X]{X} were discovered by
+\citet{Zucker:2004} and \citet{Zucker:2007} respectively in the Sloan Digital
+Sky Survey \citep[\sdss;][]{York:2000} and subsequently observed spectroscopically
+by \citet{Collins:2010} and \citet{Kalirai:2010}.  \citet{Kalirai:2010} also
+refined the distance and line-of-sight velocity measurements for
+\object[And I]{Andromeda I}, \object[And II]{II}, \object[And III]{III},
+\object[And VII]{VII} and \object[And XIV]{XIV}.  \object[And XI]{Andromeda XI},
+\object[And XII]{XII} and \object[And XIII]{XIII} were discovered by
+\citet{Martin:2006} in a wide-field photometric survey of M31's outer halo
+their distances and line-of-sight velocities were measured by
+\citet{Collins:2010}.  \object[And XIV]{Andromeda XIV} was discovered by
+\citet{Majewski:2007} and followed up by \citet{Kalirai:2010}.  The two most
+recently discovered satellites with both line-of-sight velocity and distance
+measurements -- \object[And XV]{Andromeda XV} and \object[And XVI]{XVI} -- were
+both discovered by \citet{Ibata:2007} in the first year data from the
+Pan-Andromeda Archaeological Survey (\pandas) and followed up by \citet{Letarte:2009}.
+
+The distance measurement uncertainties for Andromeda IX, XI, XII and XIII are
+extremely asymmetric about the mode and therefore present an interesting
+inference problem.  In the limit of symmetric uncertainties, we can follow the
+standard procedure of modeling the probability distribution function (PDF) of
+the measurement as a Gaussian random variable.  This model breaks down, however,
+when the uncertainties are significantly asymmetric.  Without samples from the PDF
+of the original distance measurement, we are free to assume a parametric model
+for the measurement PDF.  For simplicity, we choose a generalization of the
+Gaussian distribution the skew-normal distribution (appendix \ref{sect:sn})
+specified by one extra parameter.  Table \ref{tab:sn} lists the skew-normal
+parameterizations of the asymmetric distance measurements.
+
+
+\subsection{Rotation curve}
+
+\label{sect:rcdata}
+
+The rotation curve of M31 has been used extensively for mass modeling and it is
+credited as one of the earliest arguments for dark matter \citep{Rubin:1970}.
+Most measurements of gas kinematics are more than 20 years old and they are all
+of quite low resolution.  \citet{Chemin:2009} recently published a high resolution
+study of the HI kinematics in M31 (figure \ref{fig:rc_data}).  \Fig{rc_data}
+shows the observed gas speed, position angle and inclination from the authors'
+tilted-ring analysis.  We can see that the circular velocity profile in this
+figure has significant kinematic structure not due to a smooth, axisymmetric
+density distribution.  Comparing this to the plots of position angle and inclination
+elucidates this even further.  In the inner $R_\mathrm{p} \lesssim 30^\prime \sim 7 \kpc$
+and outer $R_\mathrm{p} \gtrsim 130^\prime \sim 30 \kpc$, the disk is much less
+inclined than the median inclination and there is also significant scatter.
+It is likely that these features are due to departures from axisymmetry and
+non-circular motions (Cite Spekkens?).  \citet{Chemin:2009} argue that their
+quoted uncertainties should account for some departure from axisymmetry but if
+the velocity field is highly non-circular then it is unsuitable for dynamical
+analysis at a na\"ive level.  With this in mind,
+
+% Because of the uncertainty and scatter in the inner and outer regions of these plots, we only fit the data in the radial range $30^\prime \le R \le 130^\prime$.
+
+(DFM: elaborate on the problems with this data)
+
+
+\subsection{Surface brightness profile}
+
+Larry: fill this section in...
+
+% The kinematic data provides a strong constraint on the mass distribution of the
+% galaxy but we should also recover the observed surface brightness profile for
+% reasonable mass-to-light ratios of the disk and bulge.  For our observational
+% constraint, we consider the classic measurement of the \Rband surface brightness
+% profile from \citet{Walterbos:1987,Walterbos:1988}.  We choose to use the \Rband
+% as opposed to a bluer band since it is less affected by dust and more sensitive
+% to the low-mass stars that dominate the mass distribution
+% \citep[e.g.][]{Binney:1998}.
+
+\section{The Model}
+
+To numerically generate the observations described in the previous section, we
+use the model originally proposed by \citet{Kuijken:1995} and further improved
+by \citet{Widrow:2008}.  The produced galaxy models consist of three axisymmetric,
+dynamically distinct components --- a disk, a bulge and a dark matter halo.
+By construction, they are simultaneously equilibrium solutions to the collisionless
+Boltzmann equation and the self-gravitational Poisson equation \citep{Binney:2008}.
+The phase-space distribution of particles in the model is fully specified by a
+multi-component distribution function of three integrals of motion: the energy
+\E, the angular momentum about the symmetry axis \Lz, and the vertical kinetic
+energy of the disk stars \Ez
+\begin{equation}
+    \eqlabel{df1}
+    \df (\E,\Lz,\Ez) = \dfhalo (\E) + \dfbulge (\E) + \dfdisk (\E,\Lz,\Ez).
+\end{equation}
+
+This distribution function is iteratively fine-tuned to match astrophysically
+motivated density profiles for each component as described by \citet{Widrow:2008}.
+The target densities that we choose are:
+\begin{itemize}
+    \item{an Einasto (CITATION?) halo,}
+    \item{a de-projected S\'ersic profile \citep{Prugniel:1997,Terzic:2005}, and}
+    \item{an exponential thin disk of mass \Md.}
+\end{itemize}
+It is important to note that although the target density profiles for the halo
+and bulge are spherically symmetric, these components in the final model are
+somewhat flattened by the disk potential \citep{Widrow:2008}.  In total, the
+galaxy model is fully specified by nine physical parameters.  These and several
+other input values are listed in \tab{params} alongside their assumed priors.
+
+
+
+
+\section{The Method}
+
+Since we would like to infer what basic structural parameters of M31 are consistent
+with observation, we must Bayes' theorem to reconcile the model and the data.
+In more precise terms, we wish to infer the probability, \posterior, of a set
+of model parameters, \model, given the data, \data.  Conversely, what we can
+easily construct is the likelihood of the data given a set of model parameters,
+\likelihood.  Bayes' theorem allows us to relate these two quantities as
+\begin{equation}
+    \posterior \propto \prior \times \likelihood
+\end{equation}
+where \prior quantifies any prior knowledge we have about the model parameters.
+To be more rigorous, all quantities in the above equation are also conditional
+on our assumption that the model is applicable but we will not include this
+explicitly for simplicity of notation.
+
+In the subsequent sections, we outline the mathematical construction of \likelihood
+and then discuss our choice of priors.
+
+\subsection{Satellite galaxy kinematics}
+
+\citet{Sales:2007b} analyzed the distribution of satellite galaxies formed in
+$N$-body/gas-dynamical simulations including dark matter, gas and stars and found
+that within the statistical errors, the satellites follow the same density
+distribution as the dark matter.  Following this result, we assume that the
+satellite galaxies are sampled directly from the dark matter distribution.
+The true distribution of satellites is probably more complex than this simple
+assumption \citep[e.g.][]{Ibata:2007}, however, given the sparseness of the
+dataset, this is a necessary assumption.
+
+Under this assumption, the phase space distribution function of satellite galaxies
+is identically $\dfhalo (\E)$ (the halo DF from \eq{df1}) with
+$\E = \Psi (s,z) + \left ( \vlos^2 + \vt^2 \right )/2$ where
+$(s,z)$ are the M31-centric cylindrical coordinates of the satellite,
+$\vlos \equiv v_\mathrm{S,A}^\mathrm{los}$ is given by \eq{vdm2}
+and $v_\mathrm{t}$ is the unknown satellite velocity in the plane of the sky.
+
+\subsubsection{Transformation to Andromeda-centric coordinates}
+
+The positions and velocities of the satellite galaxies in our sample are all
+measured in the heliocentric rest frame centered on the Sun but our model generates
+points in a coordinate system centered on M31 in phase space. We must, therefore,
+transform the observations into the rest frame of M31 in order to make any
+comparisons to the model. The position space transformation has the form
+\citep{Metz:2007}
+\begin{equation}
+    \bvec{r^\prime} = \bvec{R} (\bvec{r} - \bvec{r_\mathrm{M31}})
+\end{equation}
+where \bvec{r^\prime} and \bvec{r} are the position vectors of the satellite in
+Andromeda-centric and heliocentric coordinates respectively, \bvec{r_\mathrm{M31}}
+is the observed position of Andromeda and \bvec{R} is given by \eq{fullrotation}.
+In appendix \ref{sect:coords}, we summarize the construction of this
+transformation. Since the distance to M31 is a parameter in our model, we must
+actively perform this transformation for every sample in our MCMC analysis.
+
+\subsubsection{Velocity corrections}
+
+The observed velocities must also be corrected for the three-dimensional velocity
+of M31 itself. As we discussed previously, the transverse velocity of M31 is unknown
+so we include it as a model parameter.
+
+We begin by writing the full three-dimensional velocity of a given satellite
+galaxy $S$ with respect to M31 (labeled $A$) as
+\begin{equation}
+    \eqlabel{vdm1}
+    \vrel{S}{A} = \vrel{S}{\odot} + \vrel{\odot}{A}
+\end{equation}
+where $\mathbf{v}_{X,Y} = \mathbf{v}_{X}-\mathbf{v}_Y$ is the velocity of $X$
+with respect to $Y$.  This equation can be rewritten
+\begin{equation}
+    \mathbf{v}_\mathrm{S,A} = \mathbf{v}_{\mathrm{S},\odot}
+    + \mathbf{v}_{\odot,\mathrm{G}} + \mathbf{v}_{\mathrm{G},\odot}
+    + \mathbf{v}_{\odot,\mathrm{A}} = \mathbf{v}_{\mathrm{S,G}}
+    + \mathbf{v}_{\mathrm{G,A}}
+\end{equation}
+where $G$ indicates the Milky Way.  Then, we decompose $\mathbf{v}_{\mathrm{G,A}}$
+into a component along our line-of-sight to M31 $\hat{l}_\mathrm{A}$ and a
+component in the plane of the sky $\hat{l}_\mathrm{A}^\perp$
+\begin{equation}
+    \mathbf{v}_\mathrm{S,A} = \mathbf{v}_{\mathrm{S,G}} + (\mathbf{v}_{\mathrm{G,A}}
+    \cdot \hat{l}_\mathrm{A}) \, \hat{l}_\mathrm{A} + (\mathbf{v}_{\mathrm{G,A}}
+    \cdot \hat{l}_\mathrm{A}^\perp) \, \hat{l}_\mathrm{A}^\perp.
+\end{equation}
+$(\mathbf{v}_{\mathrm{G,A}} \cdot \hat{l}_\mathrm{A})$ has been tightly
+constrained \citep{Courteau:1999} but
+$\mathbf{v}_{\odot,\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ is not directly
+measurable. Therefore, all measurements of satellite line-of-sight velocities are
+contaminated by the transverse velocity term.  \citet{ew} argue that
+$\mathbf{v}_{\mathrm{G,A}} \cdot \hat{l}_\mathrm{A}^\perp$ should be negligible
+since the Milky Way-M31 orbit should be nearly radial and the vector between the
+Galactic centre and M31 is approximately equal to our line-of-sight
+$\hat{l}_\mathrm{A}$.  This is not an unreasonable assumption since there are
+no other large galaxies in the LG to generate significant angular momentum.
+It is, however, an unnecessary assumption and in making it, the previous authors
+are losing significant information about the proper motion.  Instead, we can
+ctually exploit this contamination to obtain a probabilistic constraint on the
+transverse motion of the M31 system.
+
+\citet{Bahcall:1981} -- and subsequently \citet{ew} and \citet{vdm} -- pointed
+out that the line-of-sight velocities of satellites at large angular distances
+will be most significantly affected by this unmeasured systematic transverse
+motion and dynamical modelling is highly sensitive to this.  \citet{vdm}
+demonstrated, however, that this effect can be used to \emph{infer} the
+systematic proper motion.  Specifically, if we project \eq{vdm1}
+onto the line-of-sight of the satellite $\hat{l}_\mathrm{S}$ we find that the
+peculiar velocity of a satellite along the line-of-sight is
+\begin{eqnarray}
+    \eqlabel{vdm2}
+    v_\mathrm{S,A}^\mathrm{los} & =& \mathbf{v}_{\mathrm{S}}
+    \cdot \hat{l}_\mathrm{S} - (\mathbf{v}_{\mathrm{A}}
+    \cdot \hat{l}_\mathrm{A}) \, \cos \Phi_\mathrm{S} \nonumber \\ &&
+    - (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp) \,
+    \sin \Phi_\mathrm{S} \, \cos \left ( \Theta_\mathrm{S} - \Theta_\perp \right ).
+\end{eqnarray}
+where $\mathbf{v}_{\mathrm{S}}$ and $\mathbf{v}_{\mathrm{A}}$ are heliocentric
+velocities and $\Phi_\mathrm{S}$ is the angular separation between
+$\hat{l}_\mathrm{A}$ and $\hat{l}_\mathrm{S}$.  In \eq{vdm2},
+$\Theta_\mathrm{S}$ and $\Theta_\perp$ are the position angles of the satellite
+with respect to M31 and $\hat{l}_\mathrm{A}^\perp$ respectively measured from
+north through east \citep[][their equation 3]{vdm}.
+
+It is clear from \eq{vdm2} that the line-of-sight velocities of
+the satellites will exhibit an oscillation as a function of position angle that
+will depend on the transverse velocity of M31.  This effect will be strongest
+for satellites at large angular separations.  This effect, though not immediately
+visible in the dataset \citep[e.g.~figure 1 of][]{vdm}, can be used to constrain
+the transverse velocity.  \citet{vdm} modelled $v_\mathrm{S,A}^\mathrm{los}$ as
+a Gaussian velocity deviate with constant dispersion $\sigma$ along the line-of-sight
+and inferred $\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ by fitting
+\eq{vdm2} to the data using least-squares (assuming uniform priors
+in $\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ and $\Theta_\perp$).
+
+We choose to model $v_\mathrm{S,A}^\mathrm{los}$ with a realistic, cosmologically
+motivated distribution function and include the transverse velocity of M31 as
+a model parameter.  In doing so, we infer both the mass profile and the
+transverse motion simultaneously and self-consistently.
+
+To compare results with \citet{vdm}, we decompose
+$\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ into northern and
+western components
+\begin{eqnarray}
+    & v_\mathrm{W} \equiv
+    (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp)
+        \, \cos \left ( \Theta_\perp + 90^\circ \right ) & \nonumber \\
+    & v_\mathrm{N} \equiv
+    (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp)
+        \, \sin \left ( \Theta_\perp + 90^\circ \right ) & .
+\end{eqnarray}
+Repeating the fitting procedure from \citet{vdm} with our updated sample of
+satellites, we find
+$(v_\mathrm{M31,los}, v_\mathrm{W}, v_\mathrm{N}) = (-303, -52, 46) \pm (24, 197, 107)$
+km s$^{-1}$ where
+$v_\mathrm{M31,los} \equiv \mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}$.
+This is in reasonably good agreement with the result from \citet{vdm} using only
+satellite line-of-sight velocities:
+$(v_\mathrm{M31,los}, v_\mathrm{W}, v_\mathrm{N}) = (-270, -136, 5) \pm (19, 148, 75)$
+km s$^{-1}$.
+
+\subsection{Computing the likelihood function}
+
+\subsubsection{Satellite galaxy kinematics}
+
+Based on the considerations of the previous section, the likelihood of observing
+satellite $i$ at its measured position in phase space given a specific model $\Theta$ is
+\begin{equation}
+    \eqlabel{satprob1}
+    \mathrm{p}_\mathrm{sat}(\mathbf{X}_i | \Theta,I) =
+    \left . \int d^6 \mathbf{X} \, S(\mathbf{X} | \mathbf{X}_i) f_\mathrm{h} (E)
+    \right /\int d^6 \mathbf{X} \, f_\mathrm{h} (E)
+\end{equation}
+where $S(\mathbf{X} | \mathbf{X}_i)$ is the distribution of the measured quantities
+(including the uncertainties).  For our entire sample of satellite galaxies, three
+components of position space (right ascension, declination and distance) and one
+component of velocity space (line-of-sight) have been measured while the two
+transverse velocity components are unknown.  Therefore, the first integral in
+\eq{satprob1} can be rewritten
+\begin{eqnarray}
+    \eqlabel{satprob2}
+    \int d^6 \mathbf{X} \, S(\mathbf{X} | \mathbf{X}_i) f_\mathrm{h} (E)
+    & = & 2 \pi \, \int_{-\infty}^{\infty} dD \int_{-\infty}^{\infty} dv_\mathrm{obs}
+    \int_0 ^{v_\mathrm{max}} v_{\mathrm{t}} \, dv_{\mathrm{t}}
+    g(D,v_\mathrm{obs},v_\mathrm{t})
+\end{eqnarray}
+where
+\begin{equation}
+    g (D,v_\mathrm{obs},v_\mathrm{t})
+    = \tilde{\mathcal{N}} (D | \xi_i, \omega_i, \alpha_i) \,
+    \mathcal{N} (v_\mathrm{obs} | v_{\mathrm{obs},i},\delta v_{\mathrm{obs},i})\,
+    f_\mathrm{h} (E)  ,
+\end{equation}
+$v_\mathrm{max} \equiv \sqrt{2 \Psi - v_\mathrm{los}^2}$ is the maximum transverse
+component of the satellite's velocity;
+$v_\mathrm{obs} \equiv \mathbf{v}_\mathrm{S} \cdot \hat{l}_\mathrm{S}$ is the
+observed line-of-sight velocity;
+$\mathcal{N} (v_\mathrm{los}; v_\mathrm{los,i},\delta v_\mathrm{los,i})$ is the
+Gaussian PDF; and  $\tilde{\mathcal{N}} (D; \xi_i, \omega_i, \alpha_i)$ is the
+skew-normal parameterization of the distance measurement.  The angular position
+integrals are simply delta functions (because the measurement uncertainty is
+negligible) so they have been omitted \eq{satprob2}.
+
+We evaluate the integration in \eq{satprob2}  numerically using Monte
+Carlo integration with importance sampling for $D$ and $v_\mathrm{obs}$ and
+Simpson's rule for $v_{\mathrm{t}}$.  We calculate the full log-likelihood of the
+satellite data given the model by taking the logarithm of \eq{satprob2}
+and summing over the set of satellites
+\begin{equation}
+    \ln \mathrm{p}_\mathrm{s} (\mathbf{X}| \Theta, I)
+    = \sum_i \ln \mathrm{p}_\mathrm{s} (\mathbf{X}_i | \Theta,I).
+\end{equation}
+Similarly, the normalization due to the second integral in \eq{satprob1} is
+\begin{equation}
+    \eqlabel{satnorm}
+    N_\mathrm{s} \times
+        \ln \left [ \int d^6 \mathbf{X} \, f_\mathrm{h} (E) \right ] =
+        N_\mathrm{s} \ln M_\mathrm{h}
+\end{equation}
+where $N_\mathrm{s}$ is the number of satellites in the sample and the integral
+is the total halo mass, by definition.  In practice, we only consider the mass
+within some limiting radius $r_\mathrm{max}$ where $r_\mathrm{max}$ is approximately
+the distance of the furthest satellite from M31 (the assumed edge of the survey).
+We choose a constant $r_\mathrm{max} = 550$ kpc but the results are insensitive
+to this choice.
+
+\subsubsection{Rotation curve}
+
+From the gravitational potential of our full galaxy model, we can calculate the
+expected circular velocity $v_\mathrm{m}(r)$ at a given radius $r$ in the disk.
+We compare this value to the observed value $v_i$ at radius $r_i$ assuming
+uncorrelated Gaussian uncertainties
+$\delta v_i = \sqrt{\delta v_{0,i}^2 + \epsilon_\mathrm{RC}}$ where
+$\delta v_{0,i}^2$ is the published uncertainty and $\epsilon_\mathrm{RC}$ is a
+free parameter --- called ``jitter'' --- that accounts for noise in the data and
+allows the true uncertainties to be inferred.  For simplicity, we assume that
+$\epsilon_\mathrm{RC}$ is a constant with radius.  The log-likelihood of the
+observed values given a particular model specified by the set of parameters
+$\mathbf{\theta}$ is
+\begin{equation}
+    \eqlabel{rclike}
+    \ln \mathrm{p}_\mathrm{rc} (\{ r_i, v_i, \delta v_i \}| v_\mathrm{m},
+    \epsilon_\mathrm{RC}) = - \sum_i \left [ \frac{[v_\mathrm{m}(r_i) - v_i]^2}
+        {2 \delta v_i ^2} - \frac{1}{2} \ln (2 \pi \delta v_i ^2) \right ].
+\end{equation}
+This is simply the standard result that $p \propto e^{-\chi^2/2}$ but it is
+important to recognize that the normalization coefficient is a function of
+$\epsilon_\mathrm{RC}$ so it will not remain constant across models.
+Intuitively, the second term on the righthand side of \eq{rclike} penalizes
+models with large values of $\epsilon_\mathrm{RC}$ for a lack of specificity.
+
+\subsubsection{Surface brightness profile}
+
+As for the rotation curve, we assume Gaussian uncertainty and calculate the
+likelihood of the observed surface brightness profile given our model.  In
+particular, we assume that the uncertainty can be parameterized by a constant
+variance $\epsilon_\mu$ at all radii.  We then calculate the surface brightness
+profile of our model $\mu_R (r_i)$ in the $R$-band assuming constant
+mass-to-light ratios for the disk and bulge and compare it to the data
+$\mu_i$ (at radius $r_i$).  The likelihood of the data is therefore
+\begin{equation}
+    \eqlabel{sbpprob}
+    \ln \mathrm{p}_\mathrm{sbp} (\{ r_i, \mu_i \} | \mu_R,\epsilon_\mu )
+    = - \frac{1}{2} \sum_i \left [ \frac{\left [ \mu_R (r_i) - \mu_i \right ]^2 }
+        {\epsilon_\mu} + \ln (2 \pi \epsilon_\mu) \right ]
+\end{equation}
+analogous to \eq{rclike}.
+
+
+
+\subsection{Na\"ive (uninformative) priors}
+
+\label{sect:priors}
+
+\Tab{params} lists all the model parameters and their assumed priors.
+
+For any dimensioned parameter that can vary from zero to infinity, it is best to
+assume a logarithmic prior, especially if there is large uncertainty in the
+physically allowed range \citep{Gregory:2005}.  The logarithmic prior enforces
+scale invariance and it is implemented by sampling in the logarithm of the parameter.
+To this end, we adopt uniform priors on the logarithm of the scale parameters in
+our model unless a more informative prior is available.
+
+For the $R$-band mass-to-light ratios of the disk and bulge, we set a conservative
+hard upper limit of $\Upsilon_R \le 10 \, M_\odot /\mathcal{L}_{\odot,R}$ but
+the data provides a much tighter constraint.  For the components of the systematic
+transverse velocity, we assume a uniform prior on $v_\mathrm{W}$ and $v_\mathrm{N}$
+but set a hard upper limit on the total transverse velocity of
+$\sqrt{v_\mathrm{W}^2+v_\mathrm{N}^2} < 1000$ km s$^{-1}$ for computational purposes.
+
+Throughout, we adopt a Gaussian prior on the distance with mean $785$ kpc and
+standard deviation $25$ kpc \citep{McConnachie:2005,McConnachie:2006}.  Similarly,
+for the systematic heliocentric line-of-sight velocity, we adopt the value
+$-301 \pm 1$ km s$^{-1}$ \citep{Courteau:1999}.
+
+\subsection{Sampling the posterior probability}
+
+Combining the likelihood functions constructed in the previous section and
+applying Bayes' theorem, we have that the posterior probability of the model
+parameters given the full data set is
+\begin{equation}
+    \eqlabel{fullposterior}
+    \ln \mathrm{p} (\mathbf{\Theta} | \mathbf{X}, I) =
+    \ln \mathrm{p} (\mathbf{\Theta} | I) +  \ln \mathrm{p}_\mathrm{sat}
+    + \ln \mathrm{p}_\mathrm{rc}
+    + \ln \mathrm{p}_\mathrm{sbp} + \mathrm{constant}
+\end{equation}
+
+Our generative model of the data is numerical and none of the marginalization
+integrals are analytic. Therefore, to estimate the value of \eq{fullposterior}
+and perform the marginalization integrals over nuisance parameters, we must
+rely on sampling. This is a large computational challenge since every evaluation
+of \eq{fullposterior} requires substantial expensive computation. To reduce the
+runtime, we use an extremely efficient sampling algorithm that employs an affine
+invariant proposal. Intuitively, affine invariance means that the algorithm is
+insensitive to the aspect ratio of the density even if it is highly anisotropic.
+Traditional MCMC algorithms require an extensive ``burn-in''.
+
+In practice, we are actually interested in the marginalized form of \eq{fullposterior}
+\begin{equation}
+    \eqlabel{marginalization}
+    p (\tilde{\boldsymbol{\Theta}} | \mathbf{X}) \propto
+        p (\tilde{\boldsymbol{\Theta}}) \int
+        p (\mathbf{X} | \tilde{\boldsymbol{\Theta}},\boldsymbol{\alpha}) \,
+        p (\boldsymbol{\alpha}) \, \dd \boldsymbol{\alpha}
+\end{equation}
+where $\tilde{\boldsymbol{\Theta}}$ is the vector of physical parameters of
+interest. The integral in
+\eq{marginalization} is over a set of \emph{nuisance parameters} $\boldsymbol{\alpha}$
+that are (generally) of no physical interest in the problem. The function
+$p (\mathbf{X} | \tilde{\boldsymbol{\Theta}},\boldsymbol{\alpha}) \, p (\boldsymbol{\alpha})$
+is not integrable analytically. Instead, since the likelihood function is only
+numerical, the integration in \eq{marginalization} is actually very expensive
+to compute. In this regime, the numerical integration algorithm of choice is
+generally Markov chain Monte Carlo (MCMC).
+Since the likelihood function is expensive to calculate, it is advantageous to
+use a sampling algorithm that reduces the necessary number of likelihood
+evaluations. This also precludes the use of second order methods (such as
+hybrid/Hamiltonian Monte Carlo) that require the calculation of (numerical)
+gradients of the likelihood function.
+
+Most uses of MCMC in the astrophysics literature are based on slight modifications
+to the Metropolis-Hastings (M-H) method \citep[e.g.][]{MacKay:2003}. Each step in
+a M-H chain is proposed using a multivariate Gaussian centered on the current
+position of the chain. Since each term in the covariance matrix of this proposal
+distribution is an unspecified parameter, this method has $D\,[D+1]/2$ tuning parameters
+(where $D$ is the dimension of the parameter space).  To make matters worse, the
+performance of this sampler is very sensitive to the optimality of these tuning
+parameters and there is no fool-proof method for choosing the values correctly.
+As a result, many heuristic methods have been developed to attempt to determine
+the optimal parameters in a data-driven way \citep[e.g.][]{Gregory:2005,Dunkley:2005,Widrow:2008}.
+Unfortunately, these methods all require ``burn-in'' phases where shorter Markov chains
+are sampled and the results are used to tune the hyperparameters.
+
+\subsection{MCMC Sampling algorithm}
+
+\paragraph{The stretch move}
+
+\citet{Goodman:2010} proposed an affine invariant ensemble sampling algorithm
+informally called the ``stretch move''. This method involves simultaneously
+evolving an ensemble of $K$ \emph{walkers} where the proposal distribution for one
+walker $k$ is based on the current positions of the $K-1$ walkers in the
+\emph{complementary ensemble}.
+
+In practice, to update the position of a walker at position $\mathbf{X}_k$,
+another walker $\mathbf{X}_j$ with $j \ne k$ is randomly chosen and then
+a new position is proposed:
+\begin{equation}
+    \eqlabel{proposal}
+    \mathbf{X}_k (t) \rightarrow \mathbf{Y} = \mathbf{X}_j + Z \, [\mathbf{X}_k (t) - \mathbf{X}_j]
+\end{equation}
+where $Z$ is a random variable drawn from a distribution $g(z)$.  It is clear that
+if $g(z)$ satisfies
+\begin{equation}
+    g(z^{-1}) = z \, g(z),
+\end{equation}
+the proposal of \eq{proposal} is symmetric. In this case, the chain will satisfy
+detailed balance if the proposal is accepted with probability
+\begin{equation}
+    \min \left \{ 1, Z^{n-1} \, \frac{p(\mathbf{Y})}{p(\mathbf{X}_k(t))} \right \}.
+\end{equation}
+This procedure is then repeated for each walker in the ensemble \emph{in series}.
+
+\citet{Goodman:2010} advocate for a particular form of $g(z)$, namely
+\begin{equation}
+    g(z) \propto \left \{ \begin{array}{ll}
+        \displaystyle\frac{1}{\sqrt{z}} & \mathrm{if}\, z\in \left [ \displaystyle\frac{1}{a}, a \right ], \\
+        0 & \mathrm{otherwise}
+    \end{array} \right .
+\end{equation}
+where $a$ is an adjustable scale parameter. For comparison, I will also use this
+distribution with $a=2$ for all benchmarks in this paper.
+
+\paragraph{The parallel stretch move}
+
+It is tempting to na\"ively parallelize the stretch move algorithm by simultaneously
+advancing each walker based on the state of the ensemble instead of evolving the
+walkers in series. Unfortunately, this would no longer satisfy detailed balance.
+Instead, if we split the ensemble into two ensembles (labeled \emph{blue} and
+\emph{red} for convenience) and simultaneously update all the blue walkers ---
+using the stretch move procedure --- based on the positions of \emph{only the red
+walkers} then the outcome is a valid step for each of the walkers. Then,
+the red walkers are advanced based only on the positions in the blue ensemble.
+
+The performance of this method --- quantified by the autocorrelation time --- is
+comparable to the traditional stretch move algorithm but the fact that one can now
+take advantage of generic parallelization makes this generalization extremely
+powerful.
+
+
+
+
+% To numerically marginalize over the nuisance parameters and approximate posterior
+% probability distribution function, we use the Markov chain Monte Carlo method
+% developed by \citet{Goodman:2010} and first applied to a problem in astrophysics
+% by \citet{Hou:2011}.  This MCMC sampler simultaneously evolves an affine-invariant
+% ensemble of ``walkers'' with the Metropolis acceptance probability.  Each walker
+% is essentially a standard Metropolis-Hastings chain but the proposal distribution
+% depends on the distribution of the other members of the ensemble.  While this means
+% that the evolution of a single walker is not Markov, \citet{Goodman:2010} show that
+% the results of the ensemble are.  This method is generally more powerful than the
+% standard MCMC techniques employed in the field \citep[e.g.~][]{Dunkley:2005}
+% because it is equally efficient at sampling \emph{any} convex surface of a given
+% dimensionality, regardless of its shape \citep{Goodman:2010}.  Most other samplers
+% require a highly fine-tuned proposal distribution whose optimal value is not known
+% a priori \citep[e.g.][]{MacKay:2003,Gregory:2005}.  The standard method of
+% empirically determining the optimal proposal distribution involves an extended
+% ``burn-in'' period where a ``heated'' distribution is sampled and therefore, the
+% samples from this period must be discarded.
+
+% The \citet{Goodman:2010} sampler is composed of $n$-walkers with positions
+% $\{ \mathbf{X}_1, \mathbf{X}_2, \ldots, \mathbf{X}_n \}$ in the $M$-dimensional
+% parameter space of the distribution.  The positions of the walkers are then updated
+% in series.  To update walker $\mathbf{X}_j (t) \rightarrow \mathbf{X}_j (t+1)$,
+% another walker $\mathbf{X}_k$ is chosen at random from the conjugate set
+% $\{ \mathbf{X}_1 (t+1), \ldots, \mathbf{X}_{j-1} (t+1), \mathbf{X}_{j+1} (t),
+%     \ldots, \mathbf{X}_{n} (t)  \}$.  Then, the proposal position
+% \begin{equation}
+%     \eqlabel{strech}
+%     \mathbf{\tilde{X}}_j(t+1) = \mathbf{X}_k + Z(\mathbf{X}_j(t)-\mathbf{X}_k).
+% \end{equation}
+% is accepted with the probability
+% \begin{equation}
+%     \mathrm{min} \left ( 1, Z^{M-1}
+%         \frac{P\left [ \mathbf{\tilde{X}}_j(t+1)\right ]}
+%         {P\left [ \mathbf{X}_j(t)\right ]} \right ).
+% \end{equation}
+% Following \citet{Goodman:2010}, we sample $Z$ from
+% \begin{equation}
+%     \left \{ \begin{array}{cl}
+%         \displaystyle{\frac{1}{\sqrt{Z}}} & \displaystyle{\frac{1}{a} < Z < a}, \\
+%         0 & \mathrm{otherwise}\\
+%     \end{array}  \right .
+% \end{equation}
+% with $a>1$ so that \eq{strech} satisfies detailed balance.  In all that follows,
+% we employ an ensemble of 100 walkers and a constant $a = 2$.
+
+\section{Results}
+
+DFM: Introduce here
+
+- MCMC stats
+
+- Summarize and introduce data subsets
+
+- refer to section \ref{sect:rcdata} about rotation curve data problems.
+
+
+\subsection{Connection With Cosmology}
+
+DFM: outline virial parameters/calculation
+
+
+
+\subsection{Constraints From Individual Datasets}
+
+\subsubsection{Satellite kinematics}
+
+\subsubsection{Rotation curve}
+
+\subsection{Full Analysis}
+
+DFM:
+
+- Full and clipped rotation curve
+
+- First: summarize, etc.
+
+\subsubsection{Convergence to observational constraints}
+
+\paragraph{Rotation curve}
+
+\paragraph{Surface brightness profile}
+
+
+
+\subsubsection{Galaxy model parameters}
+
+\subsubsection{Mass profile}
+
+\subsubsection{Problems}
+
+\paragraph{Mass-to-light ratios}
+
+\paragraph{Halo concentration}
+
+\paragraph{Mass at large radii}
+
+
+\subsection{Stability Considerations}
+
+% \citet{Widrow:2008} presented a numerical the stability of a galactic disk is very sensitive to the relative disk mass.
+
+Near-infrared imaging and kinematic arguments suggest that M31 has a (weak?) bar \citep{Beaton:2007,Saglia:2010}, presenting a strong departure from axisymmetry in the central regions of the galaxy.  Many attempts have been made to confront this complication when modeling the Galaxy by constructing and numerically evolving axisymmetric N-body models and then comparing to observations \citet{Ostriker:1973,Sellwood:1985,Fux:1997,Widrow:2008}.  The most important conclusion for our purposes is that the stability of a galactic disk is very sensitive to the relative disk mass.  It has been shown \citep{Debattista:2000,Widrow:2008} that the ratio of total circular velocity $v_\mathrm{tot}$ and the contribution of an isolated disk $v_\mathrm{d}$ measured at 2.2 disk scale lengths
+\begin{equation}
+    X^\prime = \frac{v_\mathrm{tot}^2 (2.2\,R_\mathrm{d})}{v_\mathrm{d}^2 (2.2\,R_\mathrm{d})}
+\end{equation}
+is a good proxy for estimating the stability of a disk.  In particular, \citet{Widrow:2008} showed that this parameter is equivalent to the Goldreich-Tremaine $X$ stability parameter \citep{Goldreich:1978,Goldreich:1979} with negligible scatter.  The disk density profile of a galaxy model with $X^\prime \lesssim 3$ (Larry:  is this number right?) becomes extremely distorted when evolved numerically\footnote{See http://www.cita.utoronto.ca/~dubinski/DynamicalBlueprints/ for a visualization.} and the resulting disk is qualitatively very different than observed.
+
+Although the parameter $X^\prime$ doesn't provide a rigorous, quantitative constraint on our models, we can consider a grid of lower limits on $X^\prime$ to determine its effect on our inference.  We impose a cubic prior on $X^\prime$ varying smoothly from zero at some $X_\mathrm{min}$ to unity at $X_\mathrm{min}+\Delta X$.
+
+DFM: Right now I've only done $(X_\mathrm{min},\Delta X) = (3,1)$ should also do: $X_\mathrm{min} = 2,2.5,3.5,4$? or something like that.
+
+
+
+
+\subsection{Proposed Model}
+
+DFM: Argue for a specific model here ?
+
+
+
+\section{Conclusions}
+
+
+
+
+% -------- ACKNOWLEDGEMENTS --------
+
+\acknowledgments The authors would like to thank T.J.~Bridges, S.~Courteau, D.A.~Hanes and
+D.W.~Hogg for the insightful conversations and all their support.
+
+This research made extensive use of the Python programming language and the
+open-source Python packages SciPy, NumPy, matplotlib and MarkovPy.  It also
+made us of A. Collette's HDF5 for Python (http://h5py.alfven.org/). All code
+and data used in this project are available from the authors upon request.
+
+% -------- REFERENCES --------
+
+\bibliographystyle{apj}
+\bibliography{/Users/dfm/Documents/BibDesk/database.bib}
+
+
+% -------- APPENDICES --------
+
+\appendix
+
+\section{The Skew-Normal Distribution}
+\label{sect:sn}
+
+
+The skew-normal density function is given by \citep{OHagan:1976a,Azzalini:1996}
+\begin{equation}
+    \eqlabel{sn}
+    \tilde{\mathcal{N}} (x | \xi, \omega, \beta) = \left ( \frac{2}{\omega} \right ) \phi \left ( \frac{x-\xi}{\omega} \right ) \, \Phi \left [ \beta \left ( \frac{x-\xi}{\omega} \right ) \right ],
+\end{equation}
+where
+\begin{equation}
+    \phi (x) = \frac{1}{\sqrt{2\pi}} e^{-x^2/2}
+\end{equation}
+is the standard normal distribution and
+\begin{equation}
+    \Phi(x) = \int _{-\infty} ^x \phi(x^\prime) \, dx^\prime = \frac{1}{2} \left [ 1 + \mathrm{erf} \left ( \frac{x}{\sqrt{2}} \right )\right ]
+\end{equation}
+is the cumulative distribution of $\phi(x)$.  In the limit $\beta \rightarrow 0$ we recover the standard normal distribution with mean $\xi$ and width $\omega$.  The skew-normal distribution can also be efficiently sampled pseudo-randomly.
+
+
+
+\section{Change of Coordinate Basis}
+
+\label{sect:coords}
+
+To convert from observed right ascension $\alpha$, declination $\delta$ and distance $r$ to M31-centric coordinates, we start with a position $\mathbf{r}$ measured in the equatorial basis
+\begin{equation}
+    S \equiv \left ( \begin{array}{c}
+        \mathbf{e}_x \\ \mathbf{e}_y \\ \mathbf{e}_z
+    \end{array} \right ) = \left ( \begin{array}{c}
+        \cos \delta \cos \alpha \\
+        \cos \delta \sin \delta \\
+        \sin \delta
+    \end{array} \right )
+\end{equation}
+centered on the Sun.  We then transform to a basis $S^\prime \equiv (\mathbf{e}_x^\prime, \mathbf{e}_y^\prime,\mathbf{e}_z^\prime)^\mathrm{T}$ centered on M31 with equatorial coordinates $\mathbf{r}_\mathrm{M31}$ and basis vectors $\mathbf{e}_x^\prime$ and $\mathbf{e}_y^\prime$ in the plane of M31's disk and $\mathbf{e}_z^\prime$ normal to this plane.  $\mathbf{e}_x^\prime$ is the projection of our line-of-sight onto the disk.  The full rotation corrects for (a) the orientation of the ``normal triad'' at the position of M31, (b) the position angle of the stellar disk and (c) the inclination of the disk with respect to the line-of-sight.
+
+The final transformation from $\mathbf{r} \in S$ to $\mathbf{r}^\prime \in S^\prime$ takes the form
+\begin{equation}
+    \mathbf{r}^\prime = \mathbf{R}(\mathbf{r} - \mathbf{r}_\mathrm{M31})
+\end{equation}
+where $\mathbf{R}$ is a rotation matrix that corrects for the effects mentioned previously.  To correct for the orientation of the triad at M31's position, we multiply $S$ by $\mathbf{R}_{rpq} (\alpha_\mathrm{M31}, \delta_\mathrm{M31})$ where
+\begin{equation}
+    \eqlabel{triad}
+    \mathbf{R}_{rpq} (\alpha, \delta) \equiv \left ( \begin{array}{ccc}
+    \cos \delta \cos \alpha & \cos \delta \sin \alpha & \sin \delta \\
+    -\sin \alpha & \cos \alpha & 0 \\
+    -\sin \delta \cos \alpha & -\sin \delta \sin \alpha & \cos \delta
+    \end{array} \right ).
+\end{equation}
+With this transformation and the corrections for inclination and position angle, the full rotation becomes
+\begin{equation}
+    \eqlabel{fullrot}
+    \mathbf{R} = \mathbf{R}_y (90^\circ - i) \, \mathbf{R}_x (\theta - 90^\circ) \, \mathbf{R}_{rpq} (\alpha_\mathrm{M31}, \delta_\mathrm{M31})
+\end{equation}
+where $\mathbf{R}_i$ ($i\in \{x,y,z\}$) is the \emph{right-handed} Cartesian rotation matrix about the given axis.  In \eq{fullrot}, $i = 77.5^\circ$ is M31's inclination and $\theta = 37.7^\circ$ is the position angle of the stellar disk measured from north over east \citep{de-Vaucouleurs:1958}.  Numerically, this matrix is the constant
+\begin{equation}
+    \eqlabel{fullrotation}
+    \mathbf{R} \equiv \left ( \begin{array}{ccc}
+0.7752 & 0.3204 & 0.5445 \\
+-0.6261 & 0.5042 & 0.5947 \\
+-0.0840 & -0.8019 & 0.5915
+\end{array} \right )
+\end{equation}
+which differs from the transformation from \citet{Metz:2007} by a $z$-rotation of $\sim 0.4^\circ$ since they define $\mathbf{e}_z^\prime$ in the direction of the Galactic centre instead of the Sun.  For our axisymmetric purposes, this rotation is unnecessary.
+
+
+
+% -------- MEDIA --------
+
+\clearpage
+
+% \begin{figure}[tbp]
+% \epsscale{1.}
+% \plotone{images/rc_data.eps}
+% \caption{The observation of rotation speed (top), position angle (middle) and inclination (bottom) from \citet{Chemin:2009} with their quoted uncertainties.  The dashed lines in the bottom two plots indicate the median of the measurements and the dotted line shows the value adopted by \citet{Chemin:2009}.  The shaded region is the radial range that we consider in this work. \label{fig:rc_data}}
+% \end{figure}
+
+% % \begin{figure}[tbp]
+% % \epsscale{1.}
+% % \plotone{images/sbp_data.eps}
+% % \caption{$R$-band surface brightness profile along the major axis of M31 from \citet{Walterbos:1987}.  The solid line is an illustrative disk/bulge decomposition for constant mass-to-light ratios.  The filled points are included in our fit and the open points are not. \label{fig:sbp}}
+% % \end{figure}
+
+% \begin{figure}[tbp]
+% \epsscale{1.}
+% \plottwo{images/bulge_disp.eps}{images/bulge_osc.eps}
+% \caption{\emph{Top}: The projected line-of-sight velocity dispersion profile from \citet{Saglia:2010} plotted for all position angles.  \emph{Bottom}: The same data from the shaded region ($50^{\prime\prime} \le R \le 70^{\prime\prime}$).  The black line is the maximum likelihood estimate of the oscillatory behaviour with a mean $172 \pm 5$ km s$^{-1}$.\label{fig:bulge_disp}}
+% \end{figure}
+
+
+
+% results
+
+
+% -------- TABLES --------
+
+\clearpage
+
+\begin{deluxetable}{l r rrrr r}
+    \tablecaption{Our sample of satellite galaxies. \label{tab:satdata}}
+    \tablewidth{0pt}
+    \tablehead{
+\colhead{Galaxy }   & \colhead{R.A. } & \colhead{Dec.} & \colhead{$D$ } & \colhead{$v_\mathrm{los}$ } & \colhead{Sources} \\
+    & \colhead{(J2000.0)    } & \colhead{(J2000.0)}   & \colhead{(kpc)} & \colhead{(km s$^{-1}$) } &
+    }
+    \startdata
+
+          M33       &   $1^h 33^m 50.9^s$   &   $+30^\circ 39^\prime 36.8^{\prime\prime}$   &   $809 \pm 24$        &   $-180 \pm 1$        &   1,2 \\
+          M32       &   $0^h 42^m 41.8^s$   &   $+40^\circ 51^\prime 54.6^{\prime\prime}$   &   $785 \pm 25$        &   $-205 \pm 3$        &   1,2 \\
+         IC 10      &   $0^h 20^m 17.3^s$   &   $+59^\circ 18^\prime 13.6^{\prime\prime}$   &   $660 \pm 65$        &   $-344 \pm 5$        &   1 \\
+        NGC 205     &   $0^h 40^m 22.1^s$   &   $+41^\circ 41^\prime 7.1^{\prime\prime}$    &   $824 \pm 27$        &   $-244 \pm 3$        &   1,2 \\
+        NGC 185     &   $0^h 38^m 58.0^s$   &   $+48^\circ 20^\prime 14.6^{\prime\prime}$   &   $616 \pm 26$        &   $-202 \pm 7$        &   1,2 \\
+        IC 1613     &   $1^h 4^m 47.8^s$    &   $+2^\circ 7^\prime 4.0^{\prime\prime}$      &   $715 \pm 35$        &   $-232 \pm 5$        &   1 \\
+        NGC 147     &   $0^h 33^m 12.1^s$   &   $+48^\circ 30^\prime 31.5^{\prime\prime}$   &   $675 \pm 27$        &   $-193 \pm 3$        &   1,2 \\
+        Pegasus     &   $23^h 28^m 36.2^s$  &   $+14^\circ 44^\prime 34.5^{\prime\prime}$   &   $919 \pm 30$        &   $-182 \pm 2$        &   1,2 \\
+         LGS 3      &   $1^h 3^m 55.0^s$    &   $+21^\circ 53^\prime 6.0^{\prime\prime}$    &   $769 \pm 23$        &   $-286 \pm 4$        &   1,2 \\
+         And I      &   $0^h 45^m 39.8^s$   &   $+38^\circ 2^\prime 28.0^{\prime\prime}$    &   $745 \pm 24$        &   $-375.8 \pm 1.4$    &   1,2,3 \\
+        And II      &   $1^h 16^m 29.8^s$   &   $+33^\circ 25^\prime 9.0^{\prime\prime}$    &   $652 \pm 18$        &   $-193.6 \pm 1.0$    &   1,2,3 \\
+        And III     &   $0^h 35^m 33.8^s$   &   $+36^\circ 29^\prime 52.0^{\prime\prime}$   &   $749 \pm 24$        &   $-345.6 \pm 1.8$    &   1,2,3 \\
+         And V      &   $1^h 10^m 17.1^s$   &   $+47^\circ 37^\prime 41.0^{\prime\prime}$   &   $774 \pm 28$        &   $-403 \pm 4$        &   1,2 \\
+        And VI      &   $23^h 51^m 46.3^s$  &   $+24^\circ 34^\prime 57.0^{\prime\prime}$   &   $783 \pm 25$        &   $-354 \pm 3$        &   1,2 \\
+        And VII     &   $23^h 26^m 31.0^s$  &   $+50^\circ 41^\prime 31.0^{\prime\prime}$   &   $763 \pm 35$        &   $-309.4 \pm 2.3$    &   2,3 \\
+        And IX      &   $0^h 52^m 51.1^s$   &   $+43^\circ 11^\prime 48.6^{\prime\prime}$   &   $765^{+5}_{-150}$   &   $-207.7 \pm 2.7$    &   4,5 \\
+         And X      &   $1^h 6^m 33.7^s$    &   $+44^\circ 48^\prime 15.8^{\prime\prime}$   &   $703 \pm 70$        &   $-163.8 \pm 1.2$    &   3,6 \\
+        And XI      &   $0^h 46^m 21.0^s$   &   $+33^\circ 48^\prime 22.0^{\prime\prime}$   &   $760^{+10}_{-150}$  &   $-419.6 \pm 4.4$    &   5,7 \\
+        And XII     &   $0^h 47^m 27.0^s$   &   $+34^\circ 22^\prime 29.0^{\prime\prime}$   &   $830^{+170}_{-30}$  &   $-558.4 \pm 3.2$    &   5,7 \\
+        And XIII    &   $0^h 51^m 51.0^s$   &   $+33^\circ 0^\prime 16.0^{\prime\prime}$    &   $910^{+30}_{-160}$  &   $-195.0 \pm 8.4$    &   5,7 \\
+        And XIV     &   $0^h 51^m 35.0^s$   &   $+29^\circ 41^\prime 49.0^{\prime\prime}$   &   $740 \pm 74$        &   $-481.0 \pm 2.0$    &   3,8 \\
+        And XV      &   $1^h 14^m 18.7^s$   &   $+38^\circ 7^\prime 3.0^{\prime\prime}$     &   $630 \pm 60$        &   $-339 \pm 7$        &   9,10 \\
+        And XVI     &   $0^h 59^m 29.8^s$   &   $+32^\circ 22^\prime 36.0^{\prime\prime}$   &   $525 \pm 50$        &   $-385 \pm 6$        &   9,10 \\
+
+
+        \enddata
+        \tablecomments{Sources: 1 - \citet{Evans:2000a}, 2 - \citet{McConnachie:2006}, 3 - \citet{Kalirai:2010}, 4 - \citet{Zucker:2004}, 5 - \citet{Collins:2010}, 6 - \citet{Zucker:2007}, 7 - \citet{Martin:2006}, 8 - \citet{Majewski:2007}, 9 - \citet{Ibata:2007}, 10 - \citet{Letarte:2009}}
+
+\end{deluxetable}
+
+
+\begin{deluxetable}{cccc}
+    \tablecaption{Skew-normal parameterization of distance measurements \label{tab:sn}}
+    \tablewidth{0pt}
+    \tablehead{
+    \colhead{Galaxy} & \colhead{Location ($\xi$)} & \colhead{Scale ($\omega$)} & \colhead{Shape ($\beta$)}
+    }
+    \startdata
+
+        And IX      &   730     &   115     &   -7  \\
+        And XI      &   717     &   107     &   -4  \\
+        And XII     &   889     &   109     &   2   \\
+        And XIII    &   854     &   103     &   -2  \\
+
+    \enddata
+\end{deluxetable}
+
+
+\begin{deluxetable}{lll}
+    \tabletypesize{\footnotesize}
+    \tablecaption{Model parameters and their prior distributions \label{tab:params}}
+    \tablewidth{0pt}
+    \tablehead{\colhead{Parameter} & \colhead{Description} & \colhead{Prior}}
+    \startdata
+
+
+    $\alpha_\mathrm{M31}$                                   &   Right ascension (J2000.0)\tablenotemark{a}  & $00^\mathrm{h} 42^\mathrm{m} 44.4^\mathrm{s}$\\
+    $\delta_\mathrm{M31}$                                   &   Declination (J2000.0)\tablenotemark{a}      & $+41^\circ 16^\prime 08^{\prime\prime}$\\
+    $\theta$                                                &   Position Angle\tablenotemark{a}             & $77.5^\circ$ \\
+    $i$                                                     &   Inclination\tablenotemark{a}                & $37.7^\circ$ \\
+
+    \tableline
+
+    $D_\mathrm{M31}/\mathrm{kpc}$                           &   Distance to M31\tablenotemark{b}            & $\mathcal{N} (785, 25^2)$ \\
+    $v_\mathrm{M31,los}/\mathrm{km\,s}^{-1}$                &   Line-of-sight velocity\tablenotemark{c}     & $\mathcal{N} (301, 1)$ \\
+    $(v_\mathrm{W},v_\mathrm{N})/\mathrm{km\,s}^{-1}$       &   Systemic transverse velocity                & $\sqrt{v_\mathrm{W}^2+v_\mathrm{N}^2} < 1000$ \\
+
+    \tableline
+
+    $\log_{10} \, a_\mathrm{h}/\mathrm{kpc}$                &   Halo scale length                           & $U(0,3)$  \\
+    $\log_{10} \, v_\mathrm{h}/\mathrm{km\,s}^{-1}$         &   Halo characteristic velocity                & $U(0,4)$ \\
+    $\log_{10} \, M_\mathrm{d}/10^{9} \, M_\odot$           &   Disk mass scale                             & $U(0.4,2.4)$  \\
+    $\log_{10} \, R_\mathrm{d}/\mathrm{kpc}$                &   Disk scale length                           & $U(0,1)$  \\
+    $\Upsilon_\mathrm{d}$                                   &   Disk $R$-band mass-to-light ratio           & $U(0,10)$  \\
+
+    $\log_{10} \, v_\mathrm{b}/\mathrm{km\,s}^{-1}$         &   Bulge characteristic velocity               & $U(1,3)$ \\
+    $\log_{10} \, R_\mathrm{e}/\mathrm{kpc}$                &   Bulge scale length                          & $U(-2,0.9)$  \\
+    $n$                                                     &   Bulge S\'ersic index                        & $2$  \\
+    $\Upsilon_\mathrm{b}$                                   &   Bulge $R$-band mass-to-light ratio          & $U(0,10)$  \\
+
+    \tableline
+
+    $\log_{10}\,\sqrt{\epsilon_\mathrm{RC}}/\mathrm{km\,s}^{-1}$   &   Rotation curve noise parameter              & $U(-1,6)$  \\
+    $\log_{10}\,\sqrt{\epsilon_\mathrm{b}}/\mathrm{km\,s}^{-1}$    &   Bulge velocity dispersion noise parameter   & $U(-12,12)$  \\
+    $\log_{10}\,\sqrt{\epsilon_\mu}/\mathrm{mag\,arcsec}^{-2}$                         &   Surface brightness profile noise parameter  & $U(-8,6)$  \\
+
+
+    \enddata
+
+    \tablenotetext{a}{\citet{de-Vaucouleurs:1958,de-Vaucouleurs:1991}}
+    \tablenotetext{b}{\citet{McConnachie:2005}}
+    \tablenotetext{c}{\citet{Courteau:1999}}
+\end{deluxetable}
+
+
+
+
+\begin{deluxetable}{lccc}
+    % \tabletypesize{\footnotesize}
+    \tablecaption{Model parameters and their prior distributions \label{tab:results}}
+    \tablewidth{0pt}
+    \tablehead{\colhead{Parameter} & \colhead{All} & \colhead{No fast} & \colhead{Stability}}
+    \startdata
+
+
+    $D_\mathrm{M31}/\mathrm{kpc}$                                   &    $755^{+16}_{-18}$       & $766^{+17}_{-18}$       & $765 \pm 16$           \\
+    $v_\mathrm{W}/\mathrm{km\,s}^{-1}$                              &    $28 \pm 248$            & $12 \pm 214$            & $27 \pm 151$           \\
+    $v_\mathrm{N}/\mathrm{km\,s}^{-1}$                              &    $58 \pm 126$            & $-15 \pm 116$           & $-7 \pm 76$            \\
+    $\rho_\mathrm{WN}$                                              &    0.238                   & 0.101                   & 0.222                  \\\tableline
+    $\log_{10} \, a_\mathrm{h}/\mathrm{kpc}$                        &    $1.80^{+0.14}_{-0.12}$  & $1.73^{+0.15}_{-0.18}$  & $0.91^{+0.26}_{-0.11}$ \\
+    $\log_{10} \, v_\mathrm{h}/\mathrm{km\,s}^{-1}$                 &    $2.63 \pm 0.03$         & $2.62^{+0.04}_{-0.03}$  & $2.68^{+0.03}_{-0.02}$ \\
+    $\log_{10} \, M_\mathrm{d}/10^{9} \, M_\odot$                   &    $2.16^{+0.04}_{-0.03}$  & $2.15^{+0.05}_{-0.03}$  & $1.81^{+0.03}_{-0.05}$ \\
+    $\log_{10} \, R_\mathrm{d}/\mathrm{kpc}$                        &    $0.69^{+0.04}_{-0.03}$  & $0.68^{+0.05}_{-0.02}$  & $0.74 \pm 0.01$        \\
+    $\Upsilon_\mathrm{d}$                                           &    $5.42^{+1.31}_{-1.26}$  & $4.53^{+1.77}_{-0.54}$  & $2.80^{+0.22}_{-0.29}$ \\
+    $\log_{10} \, v_\mathrm{b}/\mathrm{km\,s}^{-1}$                 &    $2.28^{+0.23}_{-0.63}$  & $2.16^{+0.29}_{-0.67}$  & $2.66^{+0.06}_{-0.09}$ \\
+    $\log_{10} \, R_\mathrm{e}/\mathrm{kpc}$                        &    $0.00^{+0.21}_{-0.30}$  & $-0.05^{+0.17}_{-0.47}$ & $0.07^{+0.06}_{-0.04}$ \\
+    $\Upsilon_\mathrm{b}$                                           &    $0.90^{+5.88}_{-0.47}$  & $1.17^{+6.62}_{-0.77}$  & $1.77^{+0.74}_{-0.59}$ \\\tableline
+    $\log_{10}\,\sqrt{\epsilon_\mathrm{RC}}/\mathrm{km\,s}^{-1}$    &    $1.39 \pm 0.03$         & $1.39 \pm 0.03$         & $1.49^{+0.08}_{-0.04}$ \\
+    $\log_{10}\,\sqrt{\epsilon_\mathrm{b}}/\mathrm{km\,s}^{-1}$     &    $2.19^{+0.55}_{-0.37}$  & $2.16^{+0.43}_{-0.33}$  & $1.33^{+0.77}_{-1.22}$ \\
+    $\log_{10}\,\sqrt{\epsilon_\mu}/\mathrm{mag\,arcsec}^{-2}$      &    $-0.70^{+0.22}_{-0.60}$ & $-0.59^{+0.10}_{-0.43}$ & $-1.24^{+0.26}_{-0.10}$\\
+
+
+    \enddata
+\end{deluxetable}
+
+
+\end{document}
