@@ -5,7 +5,6 @@ all: m31.pdf
 
 .tex.pdf:
 	pdflatex $*.tex
-	- bash -c " ( grep 'undefined citations' $*.log && bibtex $*.aux; pdflatex $*.tex ) || echo noRerun "
 	- bash -c " ( grep Rerun $*.log && pdflatex $*.tex ) || echo noRerun "
 	- bash -c " ( grep Rerun $*.log && pdflatex $*.tex ) || echo noRerun "
 

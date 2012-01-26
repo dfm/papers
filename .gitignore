@@ -10,3 +10,10 @@
 *.bst
 .DS_Store
 */.svn
+*.hdf5
+*.eps
+*.tar.gz
+*.pyc
+MoverL_Larry
+plots/m2l
+plots/naive
