@@ -8,6 +8,9 @@
 % - Name the two runs throughout:
 %   * naive: run A
 %   * m2l: run B
+% - Re-arrange to make the run including the M/L constraint be the main run
+%   and then just discuss the naive run in the discussion section
+% - make it clear what parameterization of the density we're using.
 
 
 \documentclass[preprint]{aastex}
@@ -42,23 +45,25 @@
 % NOTE: the reference key is automatically prefixed with fig:, eq:, etc.
 \newcommand{\figlabel}[1]{\label{fig:#1}}
 \newcommand{\Fig}[1]{Figure \ref{fig:#1}}
-\newcommand{\fig}[1]{figure \ref{fig:#1}}
+\newcommand{\fig}[1]{Figure \ref{fig:#1}}
 \newcommand{\tablabel}[1]{\label{tab:#1}}
 \newcommand{\Tab}[1]{Table \ref{tab:#1}}
-\newcommand{\tab}[1]{table \ref{tab:#1}}
+\newcommand{\tab}[1]{Table \ref{tab:#1}}
 \newcommand{\eqlabel}[1]{\label{eq:#1}}
-\newcommand{\Eq}[1]{Equation \ref{eq:#1}}
-\newcommand{\eq}[1]{equation \ref{eq:#1}}
+\newcommand{\Eq}[1]{Equation (\ref{eq:#1})}
+\newcommand{\eq}[1]{Equation (\ref{eq:#1})}
 
 % math symbols
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\bvec}[1]{\ensuremath{\boldsymbol{#1}}}
 \newcommand{\paramvector}[1]{\bvec{#1}}
 \newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 | #2, #3)}}
+\renewcommand{\vector}[1]{\ensuremath{\bvec{#1}}}
+\renewcommand{\matrix}[1]{\ensuremath{\bvec{#1}}}
 
 % Bayesianism
-\newcommand{\model}{\paramvector{\Theta}}
-\newcommand{\data}{\paramvector{X}}
+\newcommand{\model}{\vector{\Theta}}
+\newcommand{\data}{\vector{X}}
 \newcommand{\prob}{\ensuremath{p}}
 \newcommand{\probability}[2]{\ensuremath{\prob ( #1 | #2 )}}
 \newcommand{\likelihood}{\probability{\data}{\model}}
@@ -91,10 +96,34 @@
 \newcommand{\Rb}{\ensuremath{a_\bulge}}
 \newcommand{\nb}{\ensuremath{n_\bulge}}
 
+% change of coords basis
+\newcommand{\uvec}[1]{\ensuremath{\vector{e}_{#1}}}
+\newcommand{\ex}{\uvec{x}}
+\newcommand{\ey}{\uvec{y}}
+\newcommand{\ez}{\uvec{z}}
+\newcommand{\epx}{\ensuremath{\uvec{x}^\prime}}
+\newcommand{\epy}{\ensuremath{\uvec{y}^\prime}}
+\newcommand{\epz}{\ensuremath{\uvec{z}^\prime}}
+\newcommand{\posand}{\ensuremath{\vector{r}_\mathrm{M31}}}
+\newcommand{\R}{\ensuremath{\matrix{R}}}
+\newcommand{\Rx}{\ensuremath{\R_x}}
+\newcommand{\Ry}{\ensuremath{\R_y}}
+\newcommand{\Rz}{\ensuremath{\R_x}}
+\newcommand{\Rrpq}{\ensuremath{\R_{rpq}}}
+
 % velocity corrections
+\newcommand{\vel}[1]{\ensuremath{\vector{v}_\mathrm{#1}}}
 \newcommand{\vlos}{\ensuremath{v_\mathrm{los}}}
-\newcommand{\vt}{\ensuremath{v_\mathrm{t}}}
-\newcommand{\vrel}[2]{\ensuremath{\bvec{v}_{\mathrm{#1},\mathrm{#2}}}}
+\newcommand{\vt}{\ensuremath{\vector{v}_\mathrm{t}}}
+\newcommand{\vrel}[2]{\ensuremath{\vector{v}_{\mathrm{#1},\mathrm{#2}}}}
+\newcommand{\los}{\ensuremath{\hat{\vector{l}}}}
+\newcommand{\losperp}{\ensuremath{\hat{\vector{l}}_\perp}}
+\newcommand{\lossat}{\ensuremath{\hat{\vector{l}}_\mathrm{S}}}
+\newcommand{\angsep}{\ensuremath{\Phi}}
+\newcommand{\posang}{\ensuremath{\Theta}}
+\newcommand{\posangperp}{\ensuremath{\Theta_\perp}}
+\newcommand{\vw}{\ensuremath{v_\mathrm{W}}}
+\newcommand{\vn}{\ensuremath{v_\mathrm{N}}}
 
 % random other stuff
 \newcommand{\Rband}{\emph{R}-band}
@@ -111,14 +140,17 @@
 
 % \slugcomment{To be submitted for publication in ApJ}
 
-\author{Daniel Foreman-Mackey\altaffilmark{\ref{affil:nyu},\ref{affil:queens}}
+\author{Daniel Foreman-Mackey\altaffilmark{\ref{affil:email},
+                \ref{affil:nyu},\ref{affil:queens}}
     \& Lawrence M. Widrow\altaffilmark{\ref{affil:queens}}}
 
-\altaffiltext{1}{\label{affil:nyu}
+\altaffiltext{1}{\label{affil:email}
+    To whom correspondence should be addressed: \url{danfm@nyu.edu}}
+\altaffiltext{2}{\label{affil:nyu}
     Center for Cosmology and Particle Physics, Department of Physics,
     New York University,
-    4 Washington Place, New York, NY 10003, USA; \texttt{danfm@nyu.edu}}
-\altaffiltext{2}{\label{affil:queens}Department of Physics, Engineering Physics, and Astronomy,
+    4 Washington Place, New York, NY 10003, USA}
+\altaffiltext{3}{\label{affil:queens}Department of Physics, Engineering Physics, and Astronomy,
        Queen's University, Kingston, ON K7L 3N6, Canada}
 
 \begin{abstract}
@@ -206,7 +238,7 @@ the gravitational potential and then marginalize over the tracer DF.
 
 \section{The Data}
 
-\subsection{Satellite galaxy kinematics}
+\paragraph{Satellite galaxy kinematics}
 
 Table \ref{tab:satdata} lists the relevant information for the 23 satellite
 galaxies in our sample.  This sample was constructed by supplementing the
@@ -245,7 +277,7 @@ specified by one extra parameter.  Table \ref{tab:sn} lists the skew-normal
 parameterizations of the asymmetric distance measurements.
 
 
-\subsection{Rotation curve}
+\paragraph{Rotation curve}
 
 \label{sect:rcdata}
 
@@ -272,7 +304,7 @@ analysis at a na\"ive level.  With this in mind,
 (DFM: elaborate on the problems with this data)
 
 
-\subsection{Surface brightness profile}
+\paragraph{Surface brightness profile}
 
 Larry: fill this section in...
 
@@ -338,7 +370,7 @@ explicitly for simplicity of notation.
 In the subsequent sections, we outline the mathematical construction of \likelihood
 and then discuss our choice of priors.
 
-\subsection{Satellite galaxy kinematics}
+\paragraph{Satellite galaxy kinematics}
 
 \citet{Sales:2007b} analyzed the distribution of satellite galaxies formed in
 $N$-body/gas-dynamical simulations including dark matter, gas and stars and found
@@ -356,8 +388,6 @@ $(s,z)$ are the M31-centric cylindrical coordinates of the satellite,
 $\vlos \equiv v_\mathrm{S,A}^\mathrm{los}$ is given by \eq{vdm2}
 and $v_\mathrm{t}$ is the unknown satellite velocity in the plane of the sky.
 
-\subsubsection{Transformation to Andromeda-centric coordinates}
-
 The positions and velocities of the satellite galaxies in our sample are all
 measured in the heliocentric rest frame centered on the Sun but our model generates
 points in a coordinate system centered on M31 in phase space. We must, therefore,
@@ -374,112 +404,10 @@ In appendix \ref{sect:coords}, we summarize the construction of this
 transformation. Since the distance to M31 is a parameter in our model, we must
 actively perform this transformation for every sample in our MCMC analysis.
 
-\subsubsection{Velocity corrections}
 
-The observed velocities must also be corrected for the three-dimensional velocity
-of M31 itself. As we discussed previously, the transverse velocity of M31 is unknown
-so we include it as a model parameter.
+\section{The Likelihood Function}
 
-We begin by writing the full three-dimensional velocity of a given satellite
-galaxy $S$ with respect to M31 (labeled $A$) as
-\begin{equation}
-    \eqlabel{vdm1}
-    \vrel{S}{A} = \vrel{S}{\odot} + \vrel{\odot}{A}
-\end{equation}
-where $\mathbf{v}_{X,Y} = \mathbf{v}_{X}-\mathbf{v}_Y$ is the velocity of $X$
-with respect to $Y$.  This equation can be rewritten
-\begin{equation}
-    \mathbf{v}_\mathrm{S,A} = \mathbf{v}_{\mathrm{S},\odot}
-    + \mathbf{v}_{\odot,\mathrm{G}} + \mathbf{v}_{\mathrm{G},\odot}
-    + \mathbf{v}_{\odot,\mathrm{A}} = \mathbf{v}_{\mathrm{S,G}}
-    + \mathbf{v}_{\mathrm{G,A}}
-\end{equation}
-where $G$ indicates the Milky Way.  Then, we decompose $\mathbf{v}_{\mathrm{G,A}}$
-into a component along our line-of-sight to M31 $\hat{l}_\mathrm{A}$ and a
-component in the plane of the sky $\hat{l}_\mathrm{A}^\perp$
-\begin{equation}
-    \mathbf{v}_\mathrm{S,A} = \mathbf{v}_{\mathrm{S,G}} + (\mathbf{v}_{\mathrm{G,A}}
-    \cdot \hat{l}_\mathrm{A}) \, \hat{l}_\mathrm{A} + (\mathbf{v}_{\mathrm{G,A}}
-    \cdot \hat{l}_\mathrm{A}^\perp) \, \hat{l}_\mathrm{A}^\perp.
-\end{equation}
-$(\mathbf{v}_{\mathrm{G,A}} \cdot \hat{l}_\mathrm{A})$ has been tightly
-constrained \citep{Courteau:1999} but
-$\mathbf{v}_{\odot,\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ is not directly
-measurable. Therefore, all measurements of satellite line-of-sight velocities are
-contaminated by the transverse velocity term.  \citet{ew} argue that
-$\mathbf{v}_{\mathrm{G,A}} \cdot \hat{l}_\mathrm{A}^\perp$ should be negligible
-since the Milky Way-M31 orbit should be nearly radial and the vector between the
-Galactic centre and M31 is approximately equal to our line-of-sight
-$\hat{l}_\mathrm{A}$.  This is not an unreasonable assumption since there are
-no other large galaxies in the LG to generate significant angular momentum.
-It is, however, an unnecessary assumption and in making it, the previous authors
-are losing significant information about the proper motion.  Instead, we can
-ctually exploit this contamination to obtain a probabilistic constraint on the
-transverse motion of the M31 system.
-
-\citet{Bahcall:1981} -- and subsequently \citet{ew} and \citet{vdm} -- pointed
-out that the line-of-sight velocities of satellites at large angular distances
-will be most significantly affected by this unmeasured systematic transverse
-motion and dynamical modeling is highly sensitive to this.  \citet{vdm}
-demonstrated, however, that this effect can be used to \emph{infer} the
-systematic proper motion.  Specifically, if we project \eq{vdm1}
-onto the line-of-sight of the satellite $\hat{l}_\mathrm{S}$ we find that the
-peculiar velocity of a satellite along the line-of-sight is
-\begin{eqnarray}
-    \eqlabel{vdm2}
-    v_\mathrm{S,A}^\mathrm{los} & =& \mathbf{v}_{\mathrm{S}}
-    \cdot \hat{l}_\mathrm{S} - (\mathbf{v}_{\mathrm{A}}
-    \cdot \hat{l}_\mathrm{A}) \, \cos \Phi_\mathrm{S} \nonumber \\ &&
-    - (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp) \,
-    \sin \Phi_\mathrm{S} \, \cos \left ( \Theta_\mathrm{S} - \Theta_\perp \right ).
-\end{eqnarray}
-where $\mathbf{v}_{\mathrm{S}}$ and $\mathbf{v}_{\mathrm{A}}$ are heliocentric
-velocities and $\Phi_\mathrm{S}$ is the angular separation between
-$\hat{l}_\mathrm{A}$ and $\hat{l}_\mathrm{S}$.  In \eq{vdm2},
-$\Theta_\mathrm{S}$ and $\Theta_\perp$ are the position angles of the satellite
-with respect to M31 and $\hat{l}_\mathrm{A}^\perp$ respectively measured from
-north through east \citep[][their equation 3]{vdm}.
-
-It is clear from \eq{vdm2} that the line-of-sight velocities of
-the satellites will exhibit an oscillation as a function of position angle that
-will depend on the transverse velocity of M31.  This effect will be strongest
-for satellites at large angular separations.  This effect, though not immediately
-visible in the dataset \citep[e.g.~figure 1 of][]{vdm}, can be used to constrain
-the transverse velocity.  \citet{vdm} modelled $v_\mathrm{S,A}^\mathrm{los}$ as
-a Gaussian velocity deviate with constant dispersion $\sigma$ along the line-of-sight
-and inferred $\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ by fitting
-\eq{vdm2} to the data using least-squares (assuming uniform priors
-in $\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ and $\Theta_\perp$).
-
-We choose to model $v_\mathrm{S,A}^\mathrm{los}$ with a realistic, cosmologically
-motivated distribution function and include the transverse velocity of M31 as
-a model parameter.  In doing so, we infer both the mass profile and the
-transverse motion simultaneously and self-consistently.
-
-To compare results with \citet{vdm}, we decompose
-$\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp$ into northern and
-western components
-\begin{eqnarray}
-    & v_\mathrm{W} \equiv
-    (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp)
-        \, \cos \left ( \Theta_\perp + 90^\circ \right ) & \nonumber \\
-    & v_\mathrm{N} \equiv
-    (\mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}^\perp)
-        \, \sin \left ( \Theta_\perp + 90^\circ \right ) & .
-\end{eqnarray}
-Repeating the fitting procedure from \citet{vdm} with our updated sample of
-satellites, we find
-$(v_\mathrm{M31,los}, v_\mathrm{W}, v_\mathrm{N}) = (-303, -52, 46) \pm (24, 197, 107)$
-km s$^{-1}$ where
-$v_\mathrm{M31,los} \equiv \mathbf{v}_{\mathrm{A}} \cdot \hat{l}_\mathrm{A}$.
-This is in reasonably good agreement with the result from \citet{vdm} using only
-satellite line-of-sight velocities:
-$(v_\mathrm{M31,los}, v_\mathrm{W}, v_\mathrm{N}) = (-270, -136, 5) \pm (19, 148, 75)$
-km s$^{-1}$.
-
-\subsection{Computing the likelihood function}
-
-\subsubsection{Satellite galaxy kinematics}
+\paragraph{Satellite galaxy kinematics}
 
 Based on the considerations of the previous section, the likelihood of observing
 satellite $i$ at its measured position in phase space given a specific model $\Theta$ is
@@ -542,7 +470,7 @@ the distance of the furthest satellite from M31 (the assumed edge of the survey)
 We choose a constant $r_\mathrm{max} = 550$ kpc but the results are insensitive
 to this choice.
 
-\subsubsection{Rotation curve}
+\paragraph{Rotation curve}
 
 From the gravitational potential of our full galaxy model, we can calculate the
 expected circular velocity $v_\mathrm{m}(r)$ at a given radius $r$ in the disk.
@@ -567,7 +495,7 @@ $\epsilon_\mathrm{RC}$ so it will not remain constant across models.
 Intuitively, the second term on the righthand side of \eq{rclike} penalizes
 models with large values of $\epsilon_\mathrm{RC}$ for a lack of specificity.
 
-\subsubsection{Surface brightness profile}
+\paragraph{Surface brightness profile}
 
 As for the rotation curve, we assume Gaussian uncertainty and calculate the
 likelihood of the observed surface brightness profile given our model.  In
@@ -586,7 +514,7 @@ analogous to \eq{rclike}.
 
 
 
-\subsection{Na\"ive (uninformative) priors}
+\section{Priors}
 
 \label{sect:priors}
 
@@ -611,7 +539,7 @@ standard deviation $25$ kpc \citep{McConnachie:2005,McConnachie:2006}.  Similarl
 for the systematic heliocentric line-of-sight velocity, we adopt the value
 $-301 \pm 1$ km s$^{-1}$ \citep{Courteau:1999}.
 
-\subsection{Sampling the posterior probability}
+\section{Sampling the Posterior Probability Density}
 
 Combining the likelihood functions constructed in the previous section and
 applying Bayes' theorem, we have that the posterior probability of the model
@@ -669,8 +597,6 @@ As a result, many heuristic methods have been developed to attempt to determine
 the optimal parameters in a data-driven way \citep[e.g.][]{Gregory:2005,Dunkley:2005,Widrow:2008}.
 Unfortunately, these methods all require ``burn-in'' phases where shorter Markov chains
 are sampled and the results are used to tune the hyperparameters.
-
-\subsection{MCMC Sampling algorithm}
 
 \paragraph{The stretch move}
 
@@ -739,11 +665,11 @@ step burn-in, this yields $4\times10^6$ samples from the posterior function.
 (DFM: do we?) For display purposes, we resample each chain by 100 before
 plotting.
 
-\subsection{Fitting just the satellites}
+\paragraph{Fitting just the satellites}
 
 (do we want this?)
 
-\subsection{Fits to the data}
+\paragraph{Fits to the data}
 
 The results of the na\"ive chains provide excellent qualitative and
 quantitative fits to the rotation curve and surface brightness profile
@@ -884,13 +810,19 @@ Comparison with previous work
 
 % -------- ACKNOWLEDGEMENTS --------
 
-\acknowledgments The authors would like to thank T.J.~Bridges, S.~Courteau, D.A.~Hanes and
-D.W.~Hogg for the insightful conversations and all their support.
+\acknowledgments It is a pleasure to thank Terry Bridges (Queen's),
+St\'ephane Courteau (Queen's), David Hanes (Queen's) and David W. Hogg (NYU)
+for insightful discussions and suggestions. D.F.M. was partially supported
+by NASA (grant WHICH GRANT).
 
-This research made extensive use of the Python programming language and the
-open-source Python packages SciPy, NumPy, matplotlib and MarkovPy.  It also
-made us of A. Collette's HDF5 for Python (http://h5py.alfven.org/). All code
-and data used in this project are available from the authors upon request.
+(LARRY: any grants for you?)
+
+This research made use of the \project{Python} programming language and the
+open-source modules \project{scipy}, \project{numpy}, \project{matplotlib}
+and \project{emcee}\footnote{\url{http://danfm.ca/emcee}}.  It also
+made extensive use of A. Collette's HDF5 for Python (\project{h5py}). All
+code and data used in this project are available from the authors upon
+request.
 
 % -------- REFERENCES --------
 
@@ -1115,10 +1047,14 @@ O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
 \label{sect:sn}
 
 
-The skew-normal density function is given by \citep{OHagan:1976a,Azzalini:1996}
+The skew-normal density function is given by
+\citep{OHagan:1976a,Azzalini:1996}
 \begin{equation}
     \eqlabel{sn}
-    \tilde{\mathcal{N}} (x | \xi, \omega, \beta) = \left ( \frac{2}{\omega} \right ) \phi \left ( \frac{x-\xi}{\omega} \right ) \, \Phi \left [ \beta \left ( \frac{x-\xi}{\omega} \right ) \right ],
+    \tilde{\mathcal{N}} (x | \xi, \omega, \beta) =
+        \left ( \frac{2}{\omega} \right )
+        \phi \left ( \frac{x-\xi}{\omega} \right )
+        \, \Phi \left [ \beta \left ( \frac{x-\xi}{\omega} \right ) \right ],
 \end{equation}
 where
 \begin{equation}
@@ -1126,57 +1062,178 @@ where
 \end{equation}
 is the standard normal distribution and
 \begin{equation}
-    \Phi(x) = \int _{-\infty} ^x \phi(x^\prime) \, dx^\prime = \frac{1}{2} \left [ 1 + \mathrm{erf} \left ( \frac{x}{\sqrt{2}} \right )\right ]
+    \Phi(x) = \int _{-\infty} ^x \phi(x^\prime) \, dx^\prime
+        = \frac{1}{2} \left [ 1 +
+            \mathrm{erf} \left ( \frac{x}{\sqrt{2}} \right )\right ]
 \end{equation}
-is the cumulative distribution of $\phi(x)$.  In the limit $\beta \rightarrow 0$ we recover the standard normal distribution with mean $\xi$ and width $\omega$.  The skew-normal distribution can also be efficiently sampled pseudo-randomly.
-
+is the cumulative distribution of $\phi(x)$.  In the limit $\beta \to 0$,
+we recover the standard normal distribution with mean $\xi$ and width
+$\omega$.  The skew-normal distribution is especially appealing because it
+can be efficiently sampled pseudo-randomly. The skew-normal parameterization
+that produces a particular set of moments---specifically, the mean, variance
+and skew---must be determined numerically but this can be done as part of
+the preprocessing of the data so this is not a serious obstacle.
 
 
 \section{Change of Coordinate Basis}
 
 \label{sect:coords}
 
-To convert from observed right ascension $\alpha$, declination $\delta$ and distance $r$ to M31-centric coordinates, we start with a position $\mathbf{r}$ measured in the equatorial basis
+To convert from observed right ascension $\alpha$, declination $\delta$ and
+distance $r$ to M31-centric coordinates, we start with a position
+$\vector{r}$ measured in the equatorial basis $S \equiv \{\ex,\ey,\ez\}$
 \begin{equation}
-    S \equiv \left ( \begin{array}{c}
-        \mathbf{e}_x \\ \mathbf{e}_y \\ \mathbf{e}_z
-    \end{array} \right ) = \left ( \begin{array}{c}
-        \cos \delta \cos \alpha \\
-        \cos \delta \sin \delta \\
+    \vector{r}_S =
+    \left ( \begin{array}{c}
+        \vector{r} \cdot \ex \\
+        \vector{r} \cdot \ey \\
+        \vector{r} \cdot \ez
+    \end{array} \right )
+    = r \,\left ( \begin{array}{c}
+        \cos \delta \, \cos \alpha \\
+        \cos \delta \, \sin \delta \\
         \sin \delta
     \end{array} \right )
 \end{equation}
-centered on the Sun.  We then transform to a basis $S^\prime \equiv (\mathbf{e}_x^\prime, \mathbf{e}_y^\prime,\mathbf{e}_z^\prime)^\mathrm{T}$ centered on M31 with equatorial coordinates $\mathbf{r}_\mathrm{M31}$ and basis vectors $\mathbf{e}_x^\prime$ and $\mathbf{e}_y^\prime$ in the plane of M31's disk and $\mathbf{e}_z^\prime$ normal to this plane.  $\mathbf{e}_x^\prime$ is the projection of our line-of-sight onto the disk.  The full rotation corrects for (a) the orientation of the ``normal triad'' at the position of M31, (b) the position angle of the stellar disk and (c) the inclination of the disk with respect to the line-of-sight.
+centered on the Sun.  We then transform to a basis $S^\prime \equiv
+\{\epx,\epy,\epz\}$
+centered on M31. In the $S^\prime$ basis, the unit vectors are defined with
+$\epx$ and $\epy$ in the plane of M31's disk and $\epz$ normal to the plane.
+$\epx$ is the projection of our line-of-sight onto the disk. The full
+rotation corrects for (a) the orientation of the ``normal triad'' at the
+position of M31, (b) the position angle of the stellar disk and (c) the
+inclination of the disk with respect to the line-of-sight.
 
-The final transformation from $\mathbf{r} \in S$ to $\mathbf{r}^\prime \in S^\prime$ takes the form
+The final transformation from $\vector{r} \in S$ to
+$\vector{r}^\prime \in S^\prime$ takes the form
 \begin{equation}
-    \mathbf{r}^\prime = \mathbf{R}(\mathbf{r} - \mathbf{r}_\mathrm{M31})
+    \vector{r}^\prime = \R \, [\vector{r} - \posand]
 \end{equation}
-where $\mathbf{R}$ is a rotation matrix that corrects for the effects mentioned previously.  To correct for the orientation of the triad at M31's position, we multiply $S$ by $\mathbf{R}_{rpq} (\alpha_\mathrm{M31}, \delta_\mathrm{M31})$ where
+where $\matrix{R}$ is a rotation matrix that corrects for the effects
+mentioned previously and \posand\ is the position of M31 measured in the
+$S$ basis. The full rotation is given by
+\begin{equation}
+    \eqlabel{fullrot}
+    \matrix{R} = \Ry (90^\circ - i) \, \Rx (\theta - 90^\circ)
+        \, \Rrpq (\alpha_\mathrm{M31}, \delta_\mathrm{M31})
+\end{equation}
+where $\R_n$ is the \emph{right-handed} Cartesian rotation matrix about the
+given axis $n$ and \Rrpq\ is
 \begin{equation}
     \eqlabel{triad}
-    \mathbf{R}_{rpq} (\alpha, \delta) \equiv \left ( \begin{array}{ccc}
+    \Rrpq (\alpha, \delta) \equiv \left ( \begin{array}{ccc}
     \cos \delta \cos \alpha & \cos \delta \sin \alpha & \sin \delta \\
     -\sin \alpha & \cos \alpha & 0 \\
     -\sin \delta \cos \alpha & -\sin \delta \sin \alpha & \cos \delta
-    \end{array} \right ).
+    \end{array} \right ) \quad .
 \end{equation}
-With this transformation and the corrections for inclination and position angle, the full rotation becomes
-\begin{equation}
-    \eqlabel{fullrot}
-    \mathbf{R} = \mathbf{R}_y (90^\circ - i) \, \mathbf{R}_x (\theta - 90^\circ) \, \mathbf{R}_{rpq} (\alpha_\mathrm{M31}, \delta_\mathrm{M31})
-\end{equation}
-where $\mathbf{R}_i$ ($i\in \{x,y,z\}$) is the \emph{right-handed} Cartesian rotation matrix about the given axis.  In \eq{fullrot}, $i = 77.5^\circ$ is M31's inclination and $\theta = 37.7^\circ$ is the position angle of the stellar disk measured from north over east \citep{de-Vaucouleurs:1958}.  Numerically, this matrix is the constant
+In \eq{fullrot}, $i = 77.5^\circ$ is M31's inclination and
+$\theta = 37.7^\circ$ is the position angle of the stellar disk measured
+from north over east \citep{de-Vaucouleurs:1958}.  Numerically, this matrix
+is
 \begin{equation}
     \eqlabel{fullrotation}
-    \mathbf{R} \equiv \left ( \begin{array}{ccc}
+    \R \equiv \left ( \begin{array}{ccc}
 0.7752 & 0.3204 & 0.5445 \\
 -0.6261 & 0.5042 & 0.5947 \\
 -0.0840 & -0.8019 & 0.5915
 \end{array} \right )
 \end{equation}
-which differs from the transformation from \citet{Metz:2007} by a $z$-rotation of $\sim 0.4^\circ$ since they define $\mathbf{e}_z^\prime$ in the direction of the Galactic centre instead of the Sun.  For our axisymmetric purposes, this rotation is unnecessary.
+which differs from the transformation from \citet{Metz:2007} by a
+$z$-rotation of $\sim 0.4^\circ$ since they define $\mathbf{e}_z^\prime$
+in the direction of the Galactic center instead of the Sun. For our
+purposes, this rotation is unnecessary.
 
+\section{Velocity Corrections}
+
+The kinematics that we observe for the satellite galaxies of M31 must be
+corrected for M31's systematic motion if we wish to model the relative
+velocity distribution. This is essential for our analysis because the
+relative velocity of a satellite is the quantity that traces the underlying
+potential. Unfortunately, this systematic motion has only been constrained
+along our line-of-site and not in the plane of the sky. This transverse
+motion is generally assumed to be negligible but we will show that it is
+not difficult marginalize or infer this unknown under the assumptions of
+our model.
+
+We begin by writing the full three-dimensional velocity of a given satellite
+galaxy $S$ with respect to M31 (labeled $A$) as
+\begin{equation}
+    \eqlabel{vdm1}
+    \vrel{S}{A} = \vrel{S}{\odot} + \vrel{\odot}{A}
+\end{equation}
+where $\vrel{X,Y} = \vector{v}_{X}-\vector{v}_Y$ is the velocity of $X$
+with respect to $Y$.  This equation can be rewritten
+\begin{equation}
+    \vrel{S}{A} = \vrel{S}{\odot}+\vrel{\odot}{G}+\vrel{G}{\odot}
+                        +\vrel{\odot}{A}
+               = \vrel{S}{G} + \vrel{G}{A}
+\end{equation}
+where $G$ indicates the Milky Way.  Then, we decompose $\vrel{G}{A}$
+into a component along our line-of-sight to M31 $\los$ and a
+component in the plane of the sky $\losperp$
+\begin{equation}
+    \vrel{S}{A} = \vrel{S}{G} + [\vrel{G}{A}\cdot\los] \, \los
+        + [\vrel{G}{A}\cdot\losperp] \, \losperp \quad .
+\end{equation}
+$\vrel{G}{A}\cdot\los$ has been tightly
+constrained \citep{Courteau:1999} but
+$\vrel{\odot}{A}\cdot\losperp$ is not currently directly
+measurable. Therefore, all measurements of satellite line-of-sight
+velocities are contaminated by the transverse velocity term.
+
+\citet{Bahcall:1981}---and subsequently \citet{ew} and \citet{vdm}---pointed
+out that the line-of-sight velocities of satellites at large angular
+distances will be most significantly affected by this unmeasured systematic
+transverse motion and dynamical modeling is highly sensitive to this.
+Following \citet{vdm}, we project \eq{vdm1}
+onto the line-of-sight of the satellite $\lossat$ we find that the
+peculiar velocity of a satellite along the line-of-sight is
+\begin{equation}
+    \eqlabel{vdm2}
+    \vrel{S}{A}\cdot\lossat = \vel{S}\cdot\lossat
+                - [ \vel{A}\cdot\los] \, \cos \angsep
+                - [ \vel{A}\cdot\losperp] \,
+        \sin \Phi_\mathrm{S} \, \cos \left ( \posang
+            - \posangperp \right ).
+\end{equation}
+where $\vel{S}$ and $\vel{A}$ are observed heliocentric velocities of
+the satellite galaxy and M31 respectively. In \eq{vdm2},
+$\angsep = \cos^{-1} ( \los\cdot\lossat )$ is the angular separation
+between the satellite and M31,
+$\posang$ is the position angle of the satellite with respect to M31
+and $\posangperp$ is the position angle measured from $\losperp$.
+These position angles are measured from north through east so that we
+can compare this to equation 3 from
+\citet{vdm}.
+
+It is clear from \eq{vdm2} that the line-of-sight velocities of
+the satellites will exhibit an oscillation as a function of position angle
+that will depend on the transverse velocity of M31.  This effect will be
+strongest for satellites at large angular separations.  Although it is not
+immediately visible in the raw data \citep[see figure 1 of][]{vdm}, this
+effect can be used to constrain the transverse velocity. \citet{vdm}
+modeled the distribution of satellites as isotropic and isothermal in
+order to constrain the systematic transverse motion of M31. In other words,
+they approximated $\vrel{S}{A}\cdot\lossat$ as a Gaussian with zero mean
+and constant dispersion for each satellite. \citet{vdm} then inferred
+$\vel{A}\cdot\losperp$ by fitting \eq{vdm2} to the data using least-squares.
+
+Instead of making a similarly restrictive assumption, we include two extra
+parameters in our inference procedure, specifying the two components of M31's
+transverse motion. By doing this, we are able to self-consistently model and
+infer both the mass profile and transverse motion. Specifically, the
+model parameters that we infer are
+\begin{equation}
+    \begin{array}{r c l}
+    \vw & \equiv & [\vel{A}\cdot\losperp]
+            \, \cos\left ( \posangperp + \frac{\pi}{2} \right ) \\
+    \vn & \equiv & [\vel{A}\cdot\losperp]
+            \, \sin \left ( \posangperp + \frac{\pi}{2} \right )
+    \end{array}
+\end{equation}
+since they are directly comparable to the parameters of the same names
+from \citet{vdm}.
 
 
 % -------- MEDIA --------
