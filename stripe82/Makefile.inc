@@ -1,8 +1,11 @@
-all: stripe82.pdf
+LATEX       = pdflatex
+BASH        = bash -c
+ECHO        = echo
+RM          = rm -rf
+RM_TMP      = ${RM} $(foreach suff, ${TMP_SUFFS}, ${NAME}.${suff})
 
-%.pdf: %.tex
-	pdflatex $<
-	bash -c " ( grep 'undefined citations' $*.log && bibtex $*.aux; pdflatex $*.tex ) || echo noRerun "
-	bash -c " ( grep Rerun $*.log && pdflatex $< ) || echo noRerun "
-	bash -c " ( grep Rerun $*.log && pdflatex $< ) || echo noRerun "
+TMP_SUFFS   = pdf aux bbl blg log dvi ps eps
+SUFF        = pdf
+
+CHECK_RERUN = grep Rerun $*.log
 
