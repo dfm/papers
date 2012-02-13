@@ -64,6 +64,7 @@
 \newcommand{\bvec}[1]{\ensuremath{\boldsymbol{#1}}}
 \newcommand{\paramvector}[1]{\bvec{#1}}
 \newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 | #2, #3)}}
+\newcommand{\skewnormal}[4]{\ensuremath{\tilde{\mathcal{N}} (#1 | #2, #3, #4)}}
 \renewcommand{\vector}[1]{\ensuremath{\bvec{#1}}}
 \renewcommand{\matrix}[1]{\ensuremath{\bvec{#1}}}
 
@@ -422,13 +423,14 @@ particular model $\model$ is
 \begin{equation}
     \eqlabel{satprob1}
     \pr_\sat (\data^{(i)} | \model) = \frac{1}{Z} \,
-        \int \dd^6 \data \, S(\data^{(i)} | \data) \, \dfhalo (\E)
+        \int \dd^6 \data^\prime \, S(\data^{(i)}; \data^\prime)
+            \, \dfhalo [ \E (\data^\prime) ]
 \end{equation}
 where
 \begin{equation}
-    Z = \int \dd^6 \data \, \dfhalo (\E) = M_\mathrm{tot}
+    Z = \int \dd^6 \data^\prime \, \dfhalo [\E (\data^\prime)] = M_\mathrm{tot}
 \end{equation}
-and $S(\data_i | \data)$ is the distribution of the measured
+and $S(\data^{(i)}; \data^\prime)$ is the distribution of the measured
 phase space quantities (including the uncertainties).  For our entire
 sample of satellite galaxies, three components of position space (right
 ascension, declination and distance) and one component of velocity space
@@ -441,48 +443,44 @@ components are unknown.  Therefore, \eq{satprob1} can be rewritten
             \int_{-\infty}^{\infty} \dd D^\prime
             \int_{-\infty}^{\infty} \dd \vlos^\prime
             \int_0 ^{v_\mathrm{max}} \vtan^\prime \, \dd \vtan^\prime
-            \, \dfhalo (\E) \, g (D^{(i)}, \vlos^{(i)}, \vtan^{(i)}
-                | D^\prime, \vlos^\prime, \vtan^\prime)
+            \, \dfhalo \left [\E (\data^\prime)\right ]
+                \, g (\data^{(i)}; \data^\prime)
 \end{equation}
-where
-\begin{equation}
-    g (D,v_\mathrm{obs},v_\mathrm{t})
-    = \tilde{\mathcal{N}} (D | \xi_i, \omega_i, \alpha_i) \,
-    \mathcal{N} (v_\mathrm{obs} | v_{\mathrm{obs},i},\delta v_{\mathrm{obs},i})\,
-    f_\mathrm{h} (E)  ,
+where $\data^{i} = \{\alpha_i, \delta_i, (\xi, \omega, \beta)_i,
+(\vlos, \delta\vlos)_i \}$, $\data^\prime = \{ \alpha^\prime, \delta^\prime,
+D^\prime, \vlos^\prime, \vtan^\prime \}$ and
+\begin{equation}\eqlabel{datag}
+    g (\data^{(i)}; \data^\prime)
+    = \skewnormal{D^\prime}{\xi_i}{\omega_i}{\alpha_i} \,
+        \normal{\vlos^\prime}{\vlos^{i}}{\delta\vlos^i} \quad .
 \end{equation}
-$v_\mathrm{max} \equiv \sqrt{2 \Psi - v_\mathrm{los}^2}$ is the maximum transverse
-component of the satellite's velocity;
-$v_\mathrm{obs} \equiv \mathbf{v}_\mathrm{S} \cdot \hat{l}_\mathrm{S}$ is the
-observed line-of-sight velocity;
-$\mathcal{N} (v_\mathrm{los}; v_\mathrm{los,i},\delta v_\mathrm{los,i})$ is the
-Gaussian PDF; and  $\tilde{\mathcal{N}} (D; \xi_i, \omega_i, \alpha_i)$ is the
-skew-normal parameterization of the distance measurement.  The angular position
-integrals are simply delta functions (because the measurement uncertainty is
-negligible) so they have been omitted \eq{satprob2}.
+In \eq{datag}, \skewnormal{D^\prime}{\xi_i}{\omega_i}{\alpha_i} is the
+skew-normal parameterization of the distance measurement evaluated at
+$D^\prime$ and \normal{\vlos^\prime}{\vlos^{i}}{\delta\vlos^i} is the
+Gaussian parameterization of the observed line-of-sight velocity evaluated
+at $\vlos^\prime$. We have omitted the integrals over the angular position
+of the satellite because we are assuming that they are delta functions since
+the observational uncertainties are definitely negligible. In \eq{satprob2},
+the integral over $\vtan^\prime$ only goes from zero to
+$v_\mathrm{max} = \sqrt{2 \Psi(\data^\prime) - [\vlos^\prime]^2}$ since we
+are asserting that the satellites are bound making the integrand zero for
+$\vtan > v_\mathrm{max}$.
 
-We evaluate the integration in \eq{satprob2}  numerically using Monte
-Carlo integration with importance sampling for $D$ and $v_\mathrm{obs}$ and
-Simpson's rule for $v_{\mathrm{t}}$.  We calculate the full log-likelihood of the
-satellite data given the model by taking the logarithm of \eq{satprob2}
-and summing over the set of satellites
+We evaluate the integration in \eq{satprob2}  numerically ane calculate
+the full log-likelihood of the satellite data given the model by summing
+over all $N_\sat$ satellites
 \begin{equation}
-    \ln \mathrm{p}_\mathrm{s} (\mathbf{X}| \Theta, I)
-    = \sum_i \ln \mathrm{p}_\mathrm{s} (\mathbf{X}_i | \Theta,I).
+    \ln \pr_\sat (\data | \model)
+        = \sum_{i=1}^{N_\sat} \ln \pr_\sat (\data^{(i)} | \model).
 \end{equation}
-Similarly, the normalization due to the second integral in \eq{satprob1} is
+This expression implicitly contains a normalization term of the form
 \begin{equation}
-    \eqlabel{satnorm}
-    N_\mathrm{s} \times
-        \ln \left [ \int d^6 \mathbf{X} \, f_\mathrm{h} (E) \right ] =
-        N_\mathrm{s} \ln M_\mathrm{h}
+    N_\sat \, \ln Z = N_\sat \, \ln M_\mathrm{tot} \quad .
 \end{equation}
-where $N_\mathrm{s}$ is the number of satellites in the sample and the integral
-is the total halo mass, by definition.  In practice, we only consider the mass
-within some limiting radius $r_\mathrm{max}$ where $r_\mathrm{max}$ is approximately
-the distance of the furthest satellite from M31 (the assumed edge of the survey).
-We choose a constant $r_\mathrm{max} = 550$ kpc but the results are insensitive
-to this choice.
+In practice, it is necessary to calculate $M_\mathrm{tot}$ at a particular
+limiting radius $r_\mathrm{max}$, the ``extent'' of M31. We fix
+$r_\mathrm{max}$ at a constant 550 kpc but the results do not depend
+strongly on this choice.
 
 \paragraph{Rotation curve}
 
