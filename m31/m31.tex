@@ -11,9 +11,11 @@
 % - Re-arrange to make the run including the M/L constraint be the main run
 %   and then just discuss the naive run in the discussion section
 % - make it clear what parameterization of the density we're using.
+% - fix up discussion of sampler and reference emcee, NOTATION NOTATION
+% - remake the rcdata figure
 
 
-\documentclass[preprint]{aastex}
+\documentclass[preprint,12pt]{aastex}
 
 \usepackage{amssymb,amsmath}
 
@@ -38,6 +40,7 @@
 \newcommand{\project}[1]{\emph{#1}}
 \newcommand{\sdss}{\project{SDSS}}
 \newcommand{\pandas}{\project{PAndAS}}
+\newcommand{\paper}{\emph{Article}}
 
 \newcommand{\andromeda}{\object[M31]{Andromeda}}
 
@@ -52,9 +55,12 @@
 \newcommand{\eqlabel}[1]{\label{eq:#1}}
 \newcommand{\Eq}[1]{Equation (\ref{eq:#1})}
 \newcommand{\eq}[1]{Equation (\ref{eq:#1})}
+\newcommand{\applabel}[1]{\label{app:#1}}
+\newcommand{\App}[1]{Appendix \ref{app:#1}}
+\newcommand{\app}[1]{Appendix \ref{app:#1}}
 
 % math symbols
-\newcommand{\dd}{\mathrm{d}}
+\newcommand{\dd}{\,\mathrm{d}}
 \newcommand{\bvec}[1]{\ensuremath{\boldsymbol{#1}}}
 \newcommand{\paramvector}[1]{\bvec{#1}}
 \newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 | #2, #3)}}
@@ -66,6 +72,7 @@
 \newcommand{\data}{\vector{X}}
 \newcommand{\prob}{\ensuremath{p}}
 \newcommand{\probability}[2]{\ensuremath{\prob ( #1 | #2 )}}
+\newcommand{\pr}{\prob}
 \newcommand{\likelihood}{\probability{\data}{\model}}
 \newcommand{\posterior}{\probability{\model}{\data}}
 \newcommand{\prior}{\ensuremath{\prob (\model)}}
@@ -73,9 +80,9 @@
 % distribution functions
 \newcommand{\df}{f}
 \newcommand{\dfs}[1]{\df_\mathrm{#1}}
-\newcommand{\dfhalo}{\dfs{halo}}
-\newcommand{\dfbulge}{\dfs{bulge}}
-\newcommand{\dfdisk}{\dfs{disk}}
+\newcommand{\dfhalo}{\dfs{\halo}}
+\newcommand{\dfbulge}{\dfs{\bulge}}
+\newcommand{\dfdisk}{\dfs{\disk}}
 
 \newcommand{\E}{\ensuremath{E}}
 \newcommand{\Lz}{\ensuremath{L_Z}}
@@ -85,14 +92,15 @@
 \newcommand{\halo}{\mathrm{h}}
 \newcommand{\bulge}{\mathrm{b}}
 \newcommand{\disk}{\mathrm{d}}
+\newcommand{\sat}{\mathrm{sat}}
 \newcommand{\mass}{\ensuremath{M}}
 
 \newcommand{\ah}{\ensuremath{a_\halo}}
-\newcommand{\vh}{\ensuremath{\sigma_\halo}}
-\newcommand{\nh}{\ensuremath{n_\halo}}
+\newcommand{\vh}{\ensuremath{v_\halo}}
+\newcommand{\nh}{\ensuremath{\alpha}}
 \newcommand{\Md}{\ensuremath{\mass_\disk}}
 \newcommand{\Rd}{\ensuremath{a_\disk}}
-\newcommand{\vb}{\ensuremath{\sigma_\bulge}}
+\newcommand{\vb}{\ensuremath{v_\bulge}}
 \newcommand{\Rb}{\ensuremath{a_\bulge}}
 \newcommand{\nb}{\ensuremath{n_\bulge}}
 
@@ -115,6 +123,7 @@
 \newcommand{\vel}[1]{\ensuremath{\vector{v}_\mathrm{#1}}}
 \newcommand{\vlos}{\ensuremath{v_\mathrm{los}}}
 \newcommand{\vt}{\ensuremath{\vector{v}_\mathrm{t}}}
+\newcommand{\vtan}{\ensuremath{v_\mathrm{t}}}
 \newcommand{\vrel}[2]{\ensuremath{\vector{v}_{\mathrm{#1},\mathrm{#2}}}}
 \newcommand{\los}{\ensuremath{\hat{\vector{l}}}}
 \newcommand{\losperp}{\ensuremath{\hat{\vector{l}}_\perp}}
@@ -155,7 +164,7 @@
 
 \begin{abstract}
 
-    Due to it's proximity, there is a wealth of kinematic measurements of M31
+    Due to its proximity, there is a wealth of kinematic measurements of M31
     at all scales. These datasets provide an extremely detailed snapshot of the
     dynamics of the galaxy at both dark matter and baryon dominated scales. We
     compile a catalog of satellite galaxy kinematics in the outer reaches of the
@@ -236,200 +245,205 @@ the gravitational potential and then marginalize over the tracer DF.
 
 \end{itemize}
 
-\section{The Data}
+% =============================================== %
+%
+%              THE DATA
+%
+% =============================================== %
+
+\section{Dataset}
 
 \paragraph{Satellite galaxy kinematics}
 
-Table \ref{tab:satdata} lists the relevant information for the 23 satellite
+\Tab{satdata} lists the relevant information for the 23 satellite
 galaxies in our sample.  This sample was constructed by supplementing the
-catalogues from \citet{Evans:2000a} and \cite{McConnachie:2006} with more
-recently discovered dwarf galaxies and updated distance and velocity measurements.
-We restrict our sample to galaxies with measurements of both line-of-sight
-velocity and distance.
+catalogs from \citet{Evans:2000a} and \cite{McConnachie:2006} with more
+recently discovered dwarf galaxies and updated distance and velocity
+measurements. We restrict our sample to galaxies with measurements of both
+the line-of-sight velocity and the distance.
 
 \object[And IX]{Andromeda IX} and \object[And X]{X} were discovered by
 \citet{Zucker:2004} and \citet{Zucker:2007} respectively in the Sloan Digital
-Sky Survey \citep[\sdss;][]{York:2000} and subsequently observed spectroscopically
-by \citet{Collins:2010} and \citet{Kalirai:2010}.  \citet{Kalirai:2010} also
-refined the distance and line-of-sight velocity measurements for
-\object[And I]{Andromeda I}, \object[And II]{II}, \object[And III]{III},
-\object[And VII]{VII} and \object[And XIV]{XIV}.  \object[And XI]{Andromeda XI},
-\object[And XII]{XII} and \object[And XIII]{XIII} were discovered by
-\citet{Martin:2006} in a wide-field photometric survey of M31's outer halo
-their distances and line-of-sight velocities were measured by
-\citet{Collins:2010}.  \object[And XIV]{Andromeda XIV} was discovered by
-\citet{Majewski:2007} and followed up by \citet{Kalirai:2010}.  The two most
-recently discovered satellites with both line-of-sight velocity and distance
-measurements -- \object[And XV]{Andromeda XV} and \object[And XVI]{XVI} -- were
+Sky Survey \citep[\sdss;][]{York:2000} and subsequently observed
+spectroscopically by \citet{Collins:2010} and \citet{Kalirai:2010}.
+\citet{Kalirai:2010} also refined the distance and line-of-sight velocity
+measurements for \object[And I]{Andromeda I}, \object[And II]{II},
+\object[And III]{III}, \object[And VII]{VII} and \object[And XIV]{XIV}.
+\object[And XI]{Andromeda XI}, \object[And XII]{XII} and
+\object[And XIII]{XIII} were discovered by \citet{Martin:2006} in a
+wide-field photometric survey of M31's outer halo their distances and
+line-of-sight velocities were measured by \citet{Collins:2010}.
+\object[And XIV]{Andromeda XIV} was discovered by \citet{Majewski:2007} and
+followed up by \citet{Kalirai:2010}.  The two most recently discovered
+satellites with both line-of-sight velocity and distance measurements---%
+\object[And XV]{Andromeda XV} and \object[And XVI]{XVI}---were
 both discovered by \citet{Ibata:2007} in the first year data from the
-Pan-Andromeda Archaeological Survey (\pandas) and followed up by \citet{Letarte:2009}.
+Pan-Andromeda Archaeological Survey (\pandas) and followed up by
+\citet{Letarte:2009}.
 
-The distance measurement uncertainties for Andromeda IX, XI, XII and XIII are
-extremely asymmetric about the mode and therefore present an interesting
-inference problem.  In the limit of symmetric uncertainties, we can follow the
-standard procedure of modeling the probability distribution function (PDF) of
-the measurement as a Gaussian random variable.  This model breaks down, however,
-when the uncertainties are significantly asymmetric.  Without samples from the PDF
-of the original distance measurement, we are free to assume a parametric model
-for the measurement PDF.  For simplicity, we choose a generalization of the
-Gaussian distribution the skew-normal distribution (appendix \ref{sect:sn})
-specified by one extra parameter.  Table \ref{tab:sn} lists the skew-normal
-parameterizations of the asymmetric distance measurements.
-
+The distance measurements for Andromeda IX, XI, XII and XIII have a large
+third moment---the measurement uncertainty is highly
+asymmetric---presenting an interesting inference problem. In the limit of
+symmetric uncertainties, we can use a Gaussian noise model for the
+measurement. This model is ill-defined when the third moment is large.
+Without samples or a parameterized description of the noise model for the
+measurement, we are free to assume any (reasonable) parametric model for
+the uncertainty. We choose a generalization of the Gaussian distribution
+called the \emph{skew-normal distribution}. This distribution is
+specified by only one extra shape parameter (see \app{sn} for a
+discussion).  \Tab{sn} lists the skew-normal parameterizations of the
+asymmetric distance measurements.
 
 \paragraph{Rotation curve}
 
-\label{sect:rcdata}
-
-The rotation curve of M31 has been used extensively for mass modeling and it is
-credited as one of the earliest arguments for dark matter \citep{Rubin:1970}.
-Most measurements of gas kinematics are more than 20 years old and they are all
-of quite low resolution.  \citet{Chemin:2009} recently published a high resolution
-study of the HI kinematics in M31 (figure \ref{fig:rc_data}).  \Fig{rc_data}
-shows the observed gas speed, position angle and inclination from the authors'
-tilted-ring analysis.  We can see that the circular velocity profile in this
-figure has significant kinematic structure not due to a smooth, axisymmetric
-density distribution.  Comparing this to the plots of position angle and inclination
-elucidates this even further.  In the inner $R_\mathrm{p} \lesssim 30^\prime \sim 7 \kpc$
-and outer $R_\mathrm{p} \gtrsim 130^\prime \sim 30 \kpc$, the disk is much less
-inclined than the median inclination and there is also significant scatter.
-It is likely that these features are due to departures from axisymmetry and
-non-circular motions (Cite Spekkens?).  \citet{Chemin:2009} argue that their
-quoted uncertainties should account for some departure from axisymmetry but if
-the velocity field is highly non-circular then it is unsuitable for dynamical
-analysis at a na\"ive level.  With this in mind,
-
-% Because of the uncertainty and scatter in the inner and outer regions of these plots, we only fit the data in the radial range $30^\prime \le R \le 130^\prime$.
-
-(DFM: elaborate on the problems with this data)
-
+As a constraint on the disk kinematics, we use the HI rotation curve
+recently published by \citet{Chemin:2009}. \Fig{rc_data}
+shows the observed rotational speed, position angle and inclination inferred
+from a tilted-ring analysis.  We can see that the circular velocity profile
+in this figure has significant kinematic structure not due to a smooth,
+axisymmetric density distribution. \citet{Chemin:2009} argue that the
+uncertainties should account for some departure from axisymmetry but in
+order to account for the full effect, we take the published
+uncertainties as lower limits and infer the ``true'' uncertainties.
 
 \paragraph{Surface brightness profile}
 
 Larry: fill this section in...
 
-% The kinematic data provides a strong constraint on the mass distribution of the
-% galaxy but we should also recover the observed surface brightness profile for
-% reasonable mass-to-light ratios of the disk and bulge.  For our observational
-% constraint, we consider the classic measurement of the \Rband surface brightness
-% profile from \citet{Walterbos:1987,Walterbos:1988}.  We choose to use the \Rband
-% as opposed to a bluer band since it is less affected by dust and more sensitive
-% to the low-mass stars that dominate the mass distribution
-% \citep[e.g.][]{Binney:1998}.
 
-\section{The Model}
+% =============================================== %
+%
+%              THE MODEL
+%
+% =============================================== %
 
-To numerically generate the observations described in the previous section, we
-use the model originally proposed by \citet{Kuijken:1995} and further improved
-by \citet{Widrow:2008}.  The produced galaxy models consist of three axisymmetric,
-dynamically distinct components --- a disk, a bulge and a dark matter halo.
-By construction, they are simultaneously equilibrium solutions to the collisionless
-Boltzmann equation and the self-gravitational Poisson equation \citep{Binney:2008}.
-The phase-space distribution of particles in the model is fully specified by a
-multi-component distribution function of three integrals of motion: the energy
-\E, the angular momentum about the symmetry axis \Lz, and the vertical kinetic
-energy of the disk stars \Ez
+\section{Model}
+
+To numerically generate the observations described in the previous section,
+we use a method originally proposed by \citet{Kuijken:1995} for generating
+astrophysical self-consistent potential-density pairs. It is a
+distribution function (DF) based approach where the phase space density
+is specified by a DF $\df (\vector{x}, \vector{v})$ normalized such that
+\begin{equation}
+    \int \df (\vector{x}, \vector{v}) \dd^3 \vector{x}\dd^3 \vector{v}
+        = M_\mathrm{tot}
+\end{equation}
+where $M_\mathrm{tot}$ is the total mass of the system. A full discussion
+of this method is beyond the scope of this \paper\ so we summarize the
+key ingredients below and direct the interested reader to
+\citet{Widrow:2008} for more details.
+
+The specified DF is tailored to produce galaxy models consisting of
+three axisymmetric, dynamically distinct components: a disk, a bulge and
+a dark matter halo. By construction, these are simultaneously equilibrium
+solutions to the collisionless Boltzmann equation and the self-gravitational
+Poisson equation \citep{Binney:2008}. In practice, we specify the
+multi-component DF as a function of two integrals of motion: the energy \E,
+the angular momentum about the symmetry axis \Lz, and an approximate
+integral: the vertical kinetic energy of the disk stars \Ez. The DF can then
+be written as
 \begin{equation}
     \eqlabel{df1}
     \df (\E,\Lz,\Ez) = \dfhalo (\E) + \dfbulge (\E) + \dfdisk (\E,\Lz,\Ez).
 \end{equation}
-
-This distribution function is iteratively fine-tuned to match astrophysically
-motivated density profiles for each component as described by \citet{Widrow:2008}.
-The target densities that we choose are:
+This distribution function is iteratively fine-tuned to generate
+astrophysically motivated density profiles for each component as described
+by \citet{Widrow:2008}. The target densities that we choose are:
 \begin{itemize}
-    \item{an Einasto (CITATION?) halo,}
-    \item{a de-projected S\'ersic profile \citep{Prugniel:1997,Terzic:2005}, and}
-    \item{an exponential thin disk of mass \Md.}
+    \item{an Einasto halo \citep{Merritt:2006,Navarro:2010}
+        \begin{equation}
+            \rho_\halo (r) = \frac{\vh^2}{2^{\nh+1} \, \pi \, G \,\ah^2}
+                \, \exp \left ( -\frac{2}{\nh}
+                \left [ \left (
+                    \frac{r}{\ah} \right )^{\nh} - 1 \right ] \right ) \quad ,
+        \end{equation}
+    }
+    \item{a de-projected S\'ersic profile
+    \citep{Prugniel:1997,Terzic:2005}
+        \begin{equation}\eqlabel{bulgedens}
+            \rho_\bulge (r) = \frac{\vb^2}{4\pi G\,n\,b^{n\,[p-2]}\,
+                \Gamma (n \, [2-p]) \, \Rb^2}
+                \, \left [ \frac{r}{\Rb} \right ]^{-p} \,
+                \exp \left ( -b \, \left [ \frac{r}{\Rb} \right ]^{1/n}
+                \right ) \quad ,
+        \end{equation}
+    }
+    \item{and an exponential thin disk of mass \Md
+        \begin{equation}
+            \rho_\disk (s,z) = \frac{M_d}{4\pi \, \Rd^2\,z_\disk} \,
+                \exp \left (- \frac{s}{\Rd} \right )
+                \, \mathrm{sech}^2 \left ( \frac{z}{z_\disk} \right ) \quad .
+        \end{equation}
+    }
 \end{itemize}
+In \eq{bulgedens}, $p$ and $b$ are not free parameters. Instead, they are
+fully specified by the other model parameters as defined by
+\citet{Terzic:2005}. In total, the galaxy model is fully specified by nine
+physical parameters (listed in \tab{params}).
+
 It is important to note that although the target density profiles for the halo
 and bulge are spherically symmetric, these components in the final model are
-somewhat flattened by the disk potential \citep{Widrow:2008}.  In total, the
-galaxy model is fully specified by nine physical parameters.  These and several
-other input values are listed in \tab{params} alongside their assumed priors.
-
-
-
-
-\section{The Method}
-
-Since we would like to infer what basic structural parameters of M31 are consistent
-with observation, we must Bayes' theorem to reconcile the model and the data.
-In more precise terms, we wish to infer the probability, \posterior, of a set
-of model parameters, \model, given the data, \data.  Conversely, what we can
-easily construct is the likelihood of the data given a set of model parameters,
-\likelihood.  Bayes' theorem allows us to relate these two quantities as
-\begin{equation}
-    \posterior \propto \prior \times \likelihood
-\end{equation}
-where \prior quantifies any prior knowledge we have about the model parameters.
-To be more rigorous, all quantities in the above equation are also conditional
-on our assumption that the model is applicable but we will not include this
-explicitly for simplicity of notation.
-
-In the subsequent sections, we outline the mathematical construction of \likelihood
-and then discuss our choice of priors.
+somewhat flattened by the disk potential
+\citep[see the discussion in][]{Widrow:2008}.
 
 \paragraph{Satellite galaxy kinematics}
 
-\citet{Sales:2007b} analyzed the distribution of satellite galaxies formed in
-$N$-body/gas-dynamical simulations including dark matter, gas and stars and found
-that within the statistical errors, the satellites follow the same density
-distribution as the dark matter.  Following this result, we assume that the
-satellite galaxies are sampled directly from the dark matter distribution.
-The true distribution of satellites is probably more complex than this simple
-assumption \citep[e.g.][]{Ibata:2007}, however, given the sparseness of the
-dataset, this is a necessary assumption.
+To model the observed distribution of satellite galaxy kinematics, we assume
+that the distribution of satellites follows a density profile
+$\rho_\mathrm{sats} (s,z)$ and that they trace the potential of the system.
+For simplicity, we assume that $\rho_\mathrm{sats} \equiv \rho_\halo$. The
+true distributions of both components is certainly more complicated than this
+but given the sparseness of the dataset and the large observational
+uncertainties, this is not an unreasonable approximation. There is also
+evidence from $N$-body/gas-dynamical simulations that within the
+statistical noise, there is little kinematic bias between the dark matter
+and satellite distributions \citep{Sales:2007b}.
 
-Under this assumption, the phase space distribution function of satellite galaxies
-is identically $\dfhalo (\E)$ (the halo DF from \eq{df1}) with
+Under this assumption, the phase space distribution function of satellite
+galaxies is identically $\dfhalo (\E)$ (the halo DF from \eq{df1}) with
 $\E = \Psi (s,z) + \left ( \vlos^2 + \vt^2 \right )/2$ where
 $(s,z)$ are the M31-centric cylindrical coordinates of the satellite,
-$\vlos \equiv v_\mathrm{S,A}^\mathrm{los}$ is given by \eq{vdm2}
-and $v_\mathrm{t}$ is the unknown satellite velocity in the plane of the sky.
+$\vlos \equiv \vrel{S,A}\cdot\los$ is given by \eq{vdm2}
+and $\vt$ is the unknown satellite velocity in the plane of the sky.
 
 The positions and velocities of the satellite galaxies in our sample are all
-measured in the heliocentric rest frame centered on the Sun but our model generates
-points in a coordinate system centered on M31 in phase space. We must, therefore,
-transform the observations into the rest frame of M31 in order to make any
-comparisons to the model. The position space transformation has the form
-\citep{Metz:2007}
-\begin{equation}
-    \bvec{r^\prime} = \bvec{R} (\bvec{r} - \bvec{r_\mathrm{M31}})
-\end{equation}
-where \bvec{r^\prime} and \bvec{r} are the position vectors of the satellite in
-Andromeda-centric and heliocentric coordinates respectively, \bvec{r_\mathrm{M31}}
-is the observed position of Andromeda and \bvec{R} is given by \eq{fullrotation}.
-In appendix \ref{sect:coords}, we summarize the construction of this
-transformation. Since the distance to M31 is a parameter in our model, we must
-actively perform this transformation for every sample in our MCMC analysis.
+measured in the heliocentric rest frame centered on the Sun but our model
+generates points in a coordinate system centered on M31 in phase space. We
+must, therefore, transform the observations into the rest frame of M31 in
+order to make any comparisons to the model. The detailed derivations of these
+transformations are given in \app{coords} and \app{vel} respectively. Since
+the distance to M31 and the three components of its bulk motion are
+parameters in our model, we must actively perform these transformation for
+every sample in our MCMC analysis.
 
-
-\section{The Likelihood Function}
-
-\paragraph{Satellite galaxy kinematics}
-
-Based on the considerations of the previous section, the likelihood of observing
-satellite $i$ at its measured position in phase space given a specific model $\Theta$ is
+Based on the considerations above, the likelihood of finding a
+satellite $i$ with observed phase space coordinates $\data^{(i)}$ given
+particular model $\model$ is
 \begin{equation}
     \eqlabel{satprob1}
-    \mathrm{p}_\mathrm{sat}(\mathbf{X}_i | \Theta,I) =
-    \left . \int d^6 \mathbf{X} \, S(\mathbf{X} | \mathbf{X}_i) f_\mathrm{h} (E)
-    \right /\int d^6 \mathbf{X} \, f_\mathrm{h} (E)
+    \pr_\sat (\data^{(i)} | \model) = \frac{1}{Z} \,
+        \int \dd^6 \data \, S(\data^{(i)} | \data) \, \dfhalo (\E)
 \end{equation}
-where $S(\mathbf{X} | \mathbf{X}_i)$ is the distribution of the measured quantities
-(including the uncertainties).  For our entire sample of satellite galaxies, three
-components of position space (right ascension, declination and distance) and one
-component of velocity space (line-of-sight) have been measured while the two
-transverse velocity components are unknown.  Therefore, the first integral in
-\eq{satprob1} can be rewritten
-\begin{eqnarray}
+where
+\begin{equation}
+    Z = \int \dd^6 \data \, \dfhalo (\E) = M_\mathrm{tot}
+\end{equation}
+and $S(\data_i | \data)$ is the distribution of the measured
+phase space quantities (including the uncertainties).  For our entire
+sample of satellite galaxies, three components of position space (right
+ascension, declination and distance) and one component of velocity space
+(line-of-sight) have been measured while the two transverse velocity
+components are unknown.  Therefore, \eq{satprob1} can be rewritten
+\begin{equation}
     \eqlabel{satprob2}
-    \int d^6 \mathbf{X} \, S(\mathbf{X} | \mathbf{X}_i) f_\mathrm{h} (E)
-    & = & 2 \pi \, \int_{-\infty}^{\infty} dD \int_{-\infty}^{\infty} dv_\mathrm{obs}
-    \int_0 ^{v_\mathrm{max}} v_{\mathrm{t}} \, dv_{\mathrm{t}}
-    g(D,v_\mathrm{obs},v_\mathrm{t})
-\end{eqnarray}
+    \pr_\sat (\data^{(i)} | \model)
+        = \frac{2 \pi}{Z} \,
+            \int_{-\infty}^{\infty} \dd D^\prime
+            \int_{-\infty}^{\infty} \dd \vlos^\prime
+            \int_0 ^{v_\mathrm{max}} \vtan^\prime \, \dd \vtan^\prime
+            \, \dfhalo (\E) \, g (D^{(i)}, \vlos^{(i)}, \vtan^{(i)}
+                | D^\prime, \vlos^\prime, \vtan^\prime)
+\end{equation}
 where
 \begin{equation}
     g (D,v_\mathrm{obs},v_\mathrm{t})
@@ -511,6 +525,35 @@ $\mu_i$ (at radius $r_i$).  The likelihood of the data is therefore
         {\epsilon_\mu} + \ln (2 \pi \epsilon_\mu) \right ]
 \end{equation}
 analogous to \eq{rclike}.
+
+
+
+\section{The Method}
+
+Since we would like to infer what basic structural parameters of M31 are consistent
+with observation, we must Bayes' theorem to reconcile the model and the data.
+In more precise terms, we wish to infer the probability, \posterior, of a set
+of model parameters, \model, given the data, \data.  Conversely, what we can
+easily construct is the likelihood of the data given a set of model parameters,
+\likelihood.  Bayes' theorem allows us to relate these two quantities as
+\begin{equation}
+    \posterior \propto \prior \times \likelihood
+\end{equation}
+where \prior quantifies any prior knowledge we have about the model parameters.
+To be more rigorous, all quantities in the above equation are also conditional
+on our assumption that the model is applicable but we will not include this
+explicitly for simplicity of notation.
+
+In the subsequent sections, we outline the mathematical construction of \likelihood
+and then discuss our choice of priors.
+
+\paragraph{Satellite galaxy kinematics}
+
+
+
+\section{The Likelihood Function}
+
+
 
 
 
@@ -964,8 +1007,14 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 {McConnachie}, A.~W., {Irwin}, M.~J., {Ferguson}, A.~M.~N., {Ibata}, R.~A.,
   {Lewis}, G.~F., \& {Tanvir}, N. 2005, \mnras, 356, 979
 
+\bibitem[Merritt et al.(2006)]{Merritt:2006} Merritt, D., Graham,
+A.~W., Moore, B., Diemand, J., \& Terzi{\'c}, B.\ 2006, \aj, 132, 2685
+
 \bibitem[{{Metz} {et~al.}(2007){Metz}, {Kroupa}, \& {Jerjen}}]{Metz:2007}
 {Metz}, M., {Kroupa}, P., \& {Jerjen}, H. 2007, \mnras, 374, 1125
+
+\bibitem[Navarro et~al.(2010)]{Navarro:2010} Navarro, J.~F., Ludlow,
+A., Springel, V., et al.\ 2010, \mnras, 402, 21
 
 \bibitem[{O'Hagan \& Leonard(1976)}]{OHagan:1976a}
 O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
@@ -1044,7 +1093,7 @@ O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
 \appendix
 
 \section{The Skew-Normal Distribution}
-\label{sect:sn}
+\applabel{sn}
 
 
 The skew-normal density function is given by
@@ -1077,7 +1126,7 @@ the preprocessing of the data so this is not a serious obstacle.
 
 \section{Change of Coordinate Basis}
 
-\label{sect:coords}
+\applabel{coords}
 
 To convert from observed right ascension $\alpha$, declination $\delta$ and
 distance $r$ to M31-centric coordinates, we start with a position
@@ -1145,6 +1194,8 @@ in the direction of the Galactic center instead of the Sun. For our
 purposes, this rotation is unnecessary.
 
 \section{Velocity Corrections}
+
+\applabel{vel}
 
 The kinematics that we observe for the satellite galaxies of M31 must be
 corrected for M31's systematic motion if we wish to model the relative
@@ -1241,6 +1292,15 @@ from \citet{vdm}.
 \clearpage
 
 \begin{figure}[tbp]
+    \plotone{plots/rc_data.pdf}
+    \caption{The observation of rotation speed (top), position angle (middle)
+        and inclination (bottom) from \citet{Chemin:2009} with their quoted
+        uncertainties.  The dashed lines in the bottom two plots indicate
+        the median of the measurements and the dotted line shows the value
+        adopted by \citet{Chemin:2009}. \figlabel{rc_data}}
+\end{figure}
+
+\begin{figure}[tbp]
     \plotone{plots/m2l.pdf}
     \caption{The constraints on the stellar mass-to-light raitos of the disk
         and bulge with only uninformative priors (run A; green) and with the
@@ -1285,6 +1345,7 @@ from \citet{vdm}.
         proper motion of M33. The green dashed lines show the axes of the
         covariance ellipse for the samples. \figlabel{vt}}
 \end{figure}
+
 
 
 % results
