@@ -94,6 +94,8 @@
 \newcommand{\bulge}{\mathrm{b}}
 \newcommand{\disk}{\mathrm{d}}
 \newcommand{\sat}{\mathrm{sat}}
+\newcommand{\rc}{\mathrm{RC}}
+
 \newcommand{\mass}{\ensuremath{M}}
 
 \newcommand{\ah}{\ensuremath{a_\halo}}
@@ -104,6 +106,18 @@
 \newcommand{\vb}{\ensuremath{v_\bulge}}
 \newcommand{\Rb}{\ensuremath{a_\bulge}}
 \newcommand{\nb}{\ensuremath{n_\bulge}}
+\newcommand{\jitter}[1]{\ensuremath{\epsilon_\mathrm{#1}^2}}
+\newcommand{\jitterrc}{\jitter{RC}}
+\newcommand{\jittersbp}{\jitter{SBP}}
+
+% RC/SBP observations
+\newcommand{\rcmodel}{\ensuremath{v_\mathrm{m}}}
+\newcommand{\rcvar}{\ensuremath{\sigma_i^2 + \jitterrc}}
+\newcommand{\rcobs}{\ensuremath{v_i}}
+\newcommand{\sbp}[1]{\ensuremath{\mu_\mathrm{#1}}}
+\newcommand{\sbpmodel}{\sbp}
+\newcommand{\sbpvar}{\ensuremath{\sigma_i^2 + \jitterrc}}
+\newcommand{\sbpobs}{\ensuremath{v_i}}
 
 % change of coords basis
 \newcommand{\uvec}[1]{\ensuremath{\vector{e}_{#1}}}
@@ -214,6 +228,12 @@ galaxies: structure
 \defcitealias{vdm}{vdMG08}
 
 \section{Introduction}
+
+Andromeda, the closest large disk galaxy, provides a unique
+view into the details of galaxy structure and dynamics. The detail with
+which we can study the global structure in unparalleled and there is
+a long rich history of
+
 
 \begin{itemize}
 
@@ -484,38 +504,37 @@ strongly on this choice.
 
 \paragraph{Rotation curve}
 
-From the gravitational potential of our full galaxy model, we can calculate the
-expected circular velocity $v_\mathrm{m}(r)$ at a given radius $r$ in the disk.
-We compare this value to the observed value $v_i$ at radius $r_i$ assuming
-uncorrelated Gaussian uncertainties
-$\delta v_i = \sqrt{\delta v_{0,i}^2 + \epsilon_\mathrm{RC}}$ where
-$\delta v_{0,i}^2$ is the published uncertainty and $\epsilon_\mathrm{RC}$ is a
-free parameter --- called ``jitter'' --- that accounts for noise in the data and
+From the gravitational potential of our full galaxy model, we can calculate
+the expected circular velocity $\rcmodel (r; \model)$ at a given radius
+$r$ in the plane of the disk. We compare this value to the observed value
+$v_i$ at radius $r_i$ assuming uncorrelated Gaussian noise
+$\rcvar$ where \jitterrc\
+is a free parameter---the jitter---that accounts for noise in the data and
 allows the true uncertainties to be inferred.  For simplicity, we assume that
-$\epsilon_\mathrm{RC}$ is a constant with radius.  The log-likelihood of the
-observed values given a particular model specified by the set of parameters
-$\mathbf{\theta}$ is
+$\epsilon_\mathrm{RC}$ is constant with radius.  The log-likelihood of the
+observed values is given by
 \begin{equation}
     \eqlabel{rclike}
-    \ln \mathrm{p}_\mathrm{rc} (\{ r_i, v_i, \delta v_i \}| v_\mathrm{m},
-    \epsilon_\mathrm{RC}) = - \sum_i \left [ \frac{[v_\mathrm{m}(r_i) - v_i]^2}
-        {2 \delta v_i ^2} - \frac{1}{2} \ln (2 \pi \delta v_i ^2) \right ].
+    \ln \pr_\rc (\data | \model) = - \frac{1}{2} \, \sum_i
+        \left [ \frac{[ \rcmodel (r_i; \model) - \rcobs]^2}{\rcvar}
+            + \ln (\rcvar) + \ln (2 \pi) \right ].
 \end{equation}
-This is simply the standard result that $p \propto e^{-\chi^2/2}$ but it is
+This is simply the standard result that $\pr \propto e^{-\chi^2/2}$ but it is
 important to recognize that the normalization coefficient is a function of
-$\epsilon_\mathrm{RC}$ so it will not remain constant across models.
+\jitterrc\ so it will not remain constant across models.
 Intuitively, the second term on the righthand side of \eq{rclike} penalizes
-models with large values of $\epsilon_\mathrm{RC}$ for a lack of specificity.
+models with large values of \jitterrc\ for a lack of specificity.
 
 \paragraph{Surface brightness profile}
 
 As for the rotation curve, we assume Gaussian uncertainty and calculate the
 likelihood of the observed surface brightness profile given our model.  In
-particular, we assume that the uncertainty can be parameterized by a constant
-variance $\epsilon_\mu$ at all radii.  We then calculate the surface brightness
-profile of our model $\mu_R (r_i)$ in the $R$-band assuming constant
-mass-to-light ratios for the disk and bulge and compare it to the data
-$\mu_i$ (at radius $r_i$).  The likelihood of the data is therefore
+particular, we assume that the uncertainty can be parameterized by a
+constant variance $\epsilon_\mu$ at all radii.  We then calculate the
+surface brightness
+profile of our model $\sbpmodel (r_i; \model)$ in the \Kband\ assuming
+constant mass-to-light ratios for the disk and bulge and compare it to the
+data $\mu_i$ (at radius $r_i$).  The likelihood of the data is therefore
 \begin{equation}
     \eqlabel{sbpprob}
     \ln \mathrm{p}_\mathrm{sbp} (\{ r_i, \mu_i \} | \mu_R,\epsilon_\mu )
@@ -1289,14 +1308,14 @@ from \citet{vdm}.
 
 \clearpage
 
-\begin{figure}[tbp]
-    \plotone{plots/rc_data.pdf}
-    \caption{The observation of rotation speed (top), position angle (middle)
-        and inclination (bottom) from \citet{Chemin:2009} with their quoted
-        uncertainties.  The dashed lines in the bottom two plots indicate
-        the median of the measurements and the dotted line shows the value
-        adopted by \citet{Chemin:2009}. \figlabel{rc_data}}
-\end{figure}
+% \begin{figure}[tbp]
+%     \plotone{plots/rc_data.pdf}
+%     \caption{The observation of rotation speed (top), position angle (middle)
+%         and inclination (bottom) from \citet{Chemin:2009} with their quoted
+%         uncertainties.  The dashed lines in the bottom two plots indicate
+%         the median of the measurements and the dotted line shows the value
+%         adopted by \citet{Chemin:2009}. \figlabel{rc_data}}
+% \end{figure}
 
 \begin{figure}[tbp]
     \plotone{plots/m2l.pdf}
