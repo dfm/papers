@@ -13,6 +13,7 @@
 % - make it clear what parameterization of the density we're using.
 % - fix up discussion of sampler and reference emcee, NOTATION NOTATION
 % - remake the rcdata figure
+% - Check the numbers in the literature table
 
 
 \documentclass[preprint,12pt]{aastex}
@@ -37,7 +38,7 @@
 \newcommand{\eg}{\foreign{e.g.}}
 \newcommand{\etc}{\foreign{etc.}}
 
-\newcommand{\project}[1]{\emph{#1}}
+\newcommand{\project}[1]{{\sffamily #1}}
 \newcommand{\sdss}{\project{SDSS}}
 \newcommand{\pandas}{\project{PAndAS}}
 \newcommand{\paper}{\emph{Article}}
@@ -55,6 +56,9 @@
 \newcommand{\eqlabel}[1]{\label{eq:#1}}
 \newcommand{\Eq}[1]{Equation (\ref{eq:#1})}
 \newcommand{\eq}[1]{Equation (\ref{eq:#1})}
+\newcommand{\sectlabel}[1]{\label{sect:#1}}
+\newcommand{\Sect}[1]{Section \ref{sect:#1}}
+\newcommand{\sect}[1]{Section \ref{sect:#1}}
 \newcommand{\applabel}[1]{\label{app:#1}}
 \newcommand{\App}[1]{Appendix \ref{app:#1}}
 \newcommand{\app}[1]{Appendix \ref{app:#1}}
@@ -63,13 +67,15 @@
 \newcommand{\dd}{\,\mathrm{d}}
 \newcommand{\bvec}[1]{\ensuremath{\boldsymbol{#1}}}
 \newcommand{\paramvector}[1]{\bvec{#1}}
-\newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 | #2, #3)}}
-\newcommand{\skewnormal}[4]{\ensuremath{\tilde{\mathcal{N}} (#1 | #2, #3, #4)}}
+\newcommand{\normal}[3]{\ensuremath{\mathcal{N} (#1 ; #2, #3)}}
+\newcommand{\skewnormal}[4]{\ensuremath{\tilde{\mathcal{N}} (#1 ; #2, #3, #4)}}
 \renewcommand{\vector}[1]{\ensuremath{\bvec{#1}}}
 \renewcommand{\matrix}[1]{\ensuremath{\bvec{#1}}}
 
 % Bayesianism
 \newcommand{\model}{\vector{\Theta}}
+\newcommand{\physical}{\vector{\eta}}
+\newcommand{\nuisance}{\vector{\alpha}}
 \newcommand{\data}{\vector{X}}
 \newcommand{\prob}{\ensuremath{p}}
 \newcommand{\probability}[2]{\ensuremath{\prob ( #1 | #2 )}}
@@ -77,6 +83,11 @@
 \newcommand{\likelihood}{\probability{\data}{\model}}
 \newcommand{\posterior}{\probability{\model}{\data}}
 \newcommand{\prior}{\ensuremath{\prob (\model)}}
+
+% units
+\newcommand{\unit}[1]{\,\mathrm{#1}}
+\newcommand{\kpc}{\unit{kpc}}
+\newcommand{\kms}{\unit{km\,s^{-1}}}
 
 % distribution functions
 \newcommand{\df}{f}
@@ -95,9 +106,12 @@
 \newcommand{\disk}{\mathrm{d}}
 \newcommand{\sat}{\mathrm{sat}}
 \newcommand{\rc}{\mathrm{RC}}
+\newcommand{\sbp}{\mathrm{SBP}}
 
 \newcommand{\mass}{\ensuremath{M}}
 
+\newcommand{\distand}{\ensuremath{D_\mathrm{M31}}}
+\newcommand{\vlosand}{\ensuremath{v_\mathrm{M31}}}
 \newcommand{\ah}{\ensuremath{a_\halo}}
 \newcommand{\vh}{\ensuremath{v_\halo}}
 \newcommand{\nh}{\ensuremath{\alpha}}
@@ -109,15 +123,17 @@
 \newcommand{\jitter}[1]{\ensuremath{\epsilon_\mathrm{#1}^2}}
 \newcommand{\jitterrc}{\jitter{RC}}
 \newcommand{\jittersbp}{\jitter{SBP}}
+\newcommand{\mtol}[1]{\ensuremath{\Upsilon_{#1}}}
+\newcommand{\incl}{\ensuremath{i}}
 
 % RC/SBP observations
 \newcommand{\rcmodel}{\ensuremath{v_\mathrm{m}}}
 \newcommand{\rcvar}{\ensuremath{\sigma_i^2 + \jitterrc}}
 \newcommand{\rcobs}{\ensuremath{v_i}}
-\newcommand{\sbp}[1]{\ensuremath{\mu_\mathrm{#1}}}
-\newcommand{\sbpmodel}{\sbp}
-\newcommand{\sbpvar}{\ensuremath{\sigma_i^2 + \jitterrc}}
-\newcommand{\sbpobs}{\ensuremath{v_i}}
+\newcommand{\sbmu}[1]{\ensuremath{\mu_\mathrm{#1}}}
+\newcommand{\sbpmodel}{\sbmu}
+\newcommand{\sbpvar}{\ensuremath{\delta \sbmu{i}^2 + \jittersbp}}
+\newcommand{\sbpobs}{\ensuremath{\sbmu{i}}}
 
 % change of coords basis
 \newcommand{\uvec}[1]{\ensuremath{\vector{e}_{#1}}}
@@ -153,10 +169,6 @@
 \newcommand{\Rband}{\emph{R}-band}
 \newcommand{\Kband}{\emph{R}-band}
 
-% units
-\newcommand{\unit}[1]{\,\mathrm{#1}}
-\newcommand{\kpc}{\unit{kpc}}
-\newcommand{\kms}{\unit{km\,s^{-1}}}
 
 \begin{document}
 
@@ -482,18 +494,19 @@ at $\vlos^\prime$. We have omitted the integrals over the angular position
 of the satellite because we are assuming that they are delta functions since
 the observational uncertainties are definitely negligible. In \eq{satprob2},
 the integral over $\vtan^\prime$ only goes from zero to
-$v_\mathrm{max} = \sqrt{2 \Psi(\data^\prime) - [\vlos^\prime]^2}$ since we
+$v_\mathrm{max} = \sqrt{2 \Psi(\data^\prime) - {\vlos^\prime}^2}$ since we
 are asserting that the satellites are bound making the integrand zero for
 $\vtan > v_\mathrm{max}$.
 
-We evaluate the integration in \eq{satprob2}  numerically ane calculate
+We evaluate the integration in \eq{satprob2} numerically and calculate
 the full log-likelihood of the satellite data given the model by summing
 over all $N_\sat$ satellites
-\begin{equation}
+\begin{equation}\eqlabel{satlike}
     \ln \pr_\sat (\data | \model)
-        = \sum_{i=1}^{N_\sat} \ln \pr_\sat (\data^{(i)} | \model).
+        = \sum_{i=1}^{N_\sat} \ln \pr_\sat (\data^{(i)} | \model) \quad.
 \end{equation}
-This expression implicitly contains a normalization term of the form
+The normalization constant $Z$ in \eq{satprob2} comes into the full
+likelihood function as an additional term of the form
 \begin{equation}
     N_\sat \, \ln Z = N_\sat \, \ln M_\mathrm{tot} \quad .
 \end{equation}
@@ -517,7 +530,7 @@ observed values is given by
     \eqlabel{rclike}
     \ln \pr_\rc (\data | \model) = - \frac{1}{2} \, \sum_i
         \left [ \frac{[ \rcmodel (r_i; \model) - \rcobs]^2}{\rcvar}
-            + \ln (\rcvar) + \ln (2 \pi) \right ].
+            + \ln (\rcvar) + \ln (2 \pi) \right ] \quad .
 \end{equation}
 This is simply the standard result that $\pr \propto e^{-\chi^2/2}$ but it is
 important to recognize that the normalization coefficient is a function of
@@ -527,190 +540,126 @@ models with large values of \jitterrc\ for a lack of specificity.
 
 \paragraph{Surface brightness profile}
 
-As for the rotation curve, we assume Gaussian uncertainty and calculate the
-likelihood of the observed surface brightness profile given our model.  In
-particular, we assume that the uncertainty can be parameterized by a
-constant variance $\epsilon_\mu$ at all radii.  We then calculate the
-surface brightness
-profile of our model $\sbpmodel (r_i; \model)$ in the \Kband\ assuming
-constant mass-to-light ratios for the disk and bulge and compare it to the
-data $\mu_i$ (at radius $r_i$).  The likelihood of the data is therefore
+To calculate the surface brightness profile of a model, we use the analytic
+form of the target densities for the disk and bulge integrated along the
+line-of-sight. Then, we correct for inclination and assume a different but
+constant mass-to-light ratio for each component. The projected surface mass
+density of the bulge is given by
 \begin{equation}
-    \eqlabel{sbpprob}
-    \ln \mathrm{p}_\mathrm{sbp} (\{ r_i, \mu_i \} | \mu_R,\epsilon_\mu )
-    = - \frac{1}{2} \sum_i \left [ \frac{\left [ \mu_R (r_i) - \mu_i \right ]^2 }
-        {\epsilon_\mu} + \ln (2 \pi \epsilon_\mu) \right ]
+    \Sigma_\bulge (R) = \Sigma_0 \, \exp \left ( -b\,\left [
+        \frac{R}{\Rb}
+    \right ]^{1/\nb}\right )
 \end{equation}
-analogous to \eq{rclike}.
+where
+\begin{equation}
+    \Sigma_0 = \frac{\vb^2\,b^n\,\Gamma (\nb\,[3-p])}{2\,\pi\,
+        \Rb\,\nb\,\Gamma(n\,[2-p])\,\Gamma (2\,\nb)}
+\end{equation}
+\citep{Terzic:2005} and the surface mass density of the disk is
+\begin{equation}
+    \Sigma_\disk (R) = \frac{\Md}{2\,\pi\,\Rd^2} \, \exp \left (
+        -\frac{R}{\Rd} \right ) \quad .
+\end{equation}
+The resulting surface brightness profile is then given by
+\begin{equation}
+    \sbmu{\lambda} (R; \model) = \mathcal{M}_{\odot,\lambda} + 36.572 -
+        2.5\,\log_{10} \left (
+            \frac{\Sigma_\disk (R)}{\mtol{\disk,\lambda}\,\cos \incl}
+            + \frac{\Sigma_\bulge (R)}{\mtol{\bulge,\lambda}}
+        \right )
+\end{equation}
+where $\mathcal{M}_{\odot,\lambda}$ is the solar magnitude in a particular
+band $\lambda$ and \incl\ is the inclination.
+Then, assuming Gaussian noise \sbpvar, the likelihood function of the data
+is given by
+\begin{equation}
+    \eqlabel{sbplike}
+    \ln \pr_\sbp (\data | \model) = - \frac{1}{2} \, \sum_i
+        \left [ \frac{[ \sbmu{\lambda} (R_i; \model) - \sbpobs]^2}{\sbpvar}
+            + \ln (\sbpvar) + \ln (2 \pi) \right ] \quad .
+\end{equation}
 
+\section{Priors}\sectlabel{priors}
 
+\Tab{params} lists all the model parameters and their assumed priors. For
+most of the physical parameters, we assume a uniform prior on the logarithm
+of the value with reasonable upper and lower bounds. This is a good approach
+for dimensioned parameters where the results shouldn't depend on the choice
+of units. For the transverse velocity,
+we assume uniform priors on \vw\ and \vn\ with a hard upper limit set on
+$\sqrt{\vw^2 + \vn^2} < 1000\unit{km\,s^{-1}}$ (DFM: this wording isn't
+quite right I think).
+
+For the distance to M31, we assume a Gaussian prior
+$\pr(\distand) \sim \normal{\distand}{785\kpc}{[25\kpc]^2}$
+\citep{McConnachie:2005,McConnachie:2006}. For the bulk line-of-sight
+velocity of the M31 system, we adopt the value
+$\vlosand = -301\pm 1 \unit{km\,s^{-1}}$ \citep{Courteau:1999} and assume
+Gaussian uncertainty.
+
+Stellar population synthesis provides constraints on the expected stellar
+mass-to-light ratios of M31. LARRY: add some discussion here?
+To see the effects of adopting this restrictive prior, we will
+compare the results with those obtained with a uniform prior
+$0 < \mtol{} < 10$ on both mass-to-light ratios.
 
 \section{The Method}
 
-Since we would like to infer what basic structural parameters of M31 are consistent
-with observation, we must Bayes' theorem to reconcile the model and the data.
-In more precise terms, we wish to infer the probability, \posterior, of a set
-of model parameters, \model, given the data, \data.  Conversely, what we can
-easily construct is the likelihood of the data given a set of model parameters,
-\likelihood.  Bayes' theorem allows us to relate these two quantities as
-\begin{equation}
-    \posterior \propto \prior \times \likelihood
+The fundamental question that we would like to answer in this project is
+what are the values of physical parameters of our model that are consistent
+with the available kinematic observations of M31. As usual, it is relatively
+easy to calculate the likelihood of the observed data given a particular set
+of model parameters---as described in the previous section---so we must use
+Bayes' theorem to invert the problem and measure the posterior probability
+distribution function (PDF). Mathematically, this operation is given by
+\begin{equation}\eqlabel{posteriorprob}
+    \pr (\model | \data) \propto \pr (\model) \, \pr (\data |\model)
 \end{equation}
-where \prior quantifies any prior knowledge we have about the model parameters.
-To be more rigorous, all quantities in the above equation are also conditional
-on our assumption that the model is applicable but we will not include this
-explicitly for simplicity of notation.
-
-In the subsequent sections, we outline the mathematical construction of \likelihood
-and then discuss our choice of priors.
-
-\paragraph{Satellite galaxy kinematics}
-
-
-
-\section{The Likelihood Function}
-
-
-
-
-
-\section{Priors}
-
-\label{sect:priors}
-
-\Tab{params} lists all the model parameters and their assumed priors.
-
-For any dimensioned parameter that can vary from zero to infinity, it is best to
-assume a logarithmic prior, especially if there is large uncertainty in the
-physically allowed range \citep{Gregory:2005}.  The logarithmic prior enforces
-scale invariance and it is implemented by sampling in the logarithm of the parameter.
-To this end, we adopt uniform priors on the logarithm of the scale parameters in
-our model unless a more informative prior is available.
-
-For the $R$-band mass-to-light ratios of the disk and bulge, we set a conservative
-hard upper limit of $\Upsilon_R \le 10 \, M_\odot /\mathcal{L}_{\odot,R}$ but
-the data provides a much tighter constraint.  For the components of the systematic
-transverse velocity, we assume a uniform prior on $v_\mathrm{W}$ and $v_\mathrm{N}$
-but set a hard upper limit on the total transverse velocity of
-$\sqrt{v_\mathrm{W}^2+v_\mathrm{N}^2} < 1000$ km s$^{-1}$ for computational purposes.
-
-Throughout, we adopt a Gaussian prior on the distance with mean $785$ kpc and
-standard deviation $25$ kpc \citep{McConnachie:2005,McConnachie:2006}.  Similarly,
-for the systematic heliocentric line-of-sight velocity, we adopt the value
-$-301 \pm 1$ km s$^{-1}$ \citep{Courteau:1999}.
-
-\section{Sampling the Posterior Probability Density}
-
-Combining the likelihood functions constructed in the previous section and
-applying Bayes' theorem, we have that the posterior probability of the model
-parameters given the full data set is
-\begin{equation}
-    \eqlabel{fullposterior}
-    \ln \mathrm{p} (\mathbf{\Theta} | \mathbf{X}, I) =
-    \ln \mathrm{p} (\mathbf{\Theta} | I) +  \ln \mathrm{p}_\mathrm{sat}
-    + \ln \mathrm{p}_\mathrm{rc}
-    + \ln \mathrm{p}_\mathrm{sbp} + \mathrm{constant}
+where the proportionality constant will not enter our analysis.
+The likelihood function $\pr (\data | \model)$ is given by
+\begin{equation}\eqlabel{fulllikelihood}
+    \ln \pr (\data |\model) = \ln \pr_\sat (\data | \model)
+    + \ln \pr_\rc (\data | \model) + \ln \pr_\sbp (\data | \model)
 \end{equation}
+where the components are given by \eq{satlike}, \eq{rclike} and \eq{sbplike}
+respectively. Similarly, the prior function $\pr (\model)$ is given by the
+sum of the log-prior functions for each parameter as described in
+\sect{priors}. It is worth noting the well known but somewhat subtle point
+that all of the probabilistic statements being made rely on the implicit and
+restrictive assumption that our particular parameterization of the detailed
+physics of galaxies is correct or, at least, reasonable. Any interpretation
+of the results should clearly be made within this context.
 
-Our generative model of the data is numerical and none of the marginalization
-integrals are analytic. Therefore, to estimate the value of \eq{fullposterior}
-and perform the marginalization integrals over nuisance parameters, we must
-rely on sampling. This is a large computational challenge since every evaluation
-of \eq{fullposterior} requires substantial expensive computation. To reduce the
-runtime, we use an extremely efficient sampling algorithm that employs an affine
-invariant proposal. Intuitively, affine invariance means that the algorithm is
-insensitive to the aspect ratio of the density even if it is highly anisotropic.
-Traditional MCMC algorithms require an extensive ``burn-in''.
-
-In practice, we are actually interested in the marginalized form of \eq{fullposterior}
-\begin{equation}
-    \eqlabel{marginalization}
-    p (\tilde{\boldsymbol{\Theta}} | \mathbf{X}) \propto
-        p (\tilde{\boldsymbol{\Theta}}) \int
-        p (\mathbf{X} | \tilde{\boldsymbol{\Theta}},\boldsymbol{\alpha}) \,
-        p (\boldsymbol{\alpha}) \, \dd \boldsymbol{\alpha}
+In practice, besides measuring \eq{posteriorprob}, it is generally desirable
+to approximate the marginalized PDF and, in particular, the expectation values
+for a set of model parameters $\physical \in \model$. The marginalized PDF
+is given by
+\begin{equation}\eqlabel{marginalization}
+    \pr (\physical | \data) = \int \pr (\model | \data) \dd \nuisance
 \end{equation}
-where $\tilde{\boldsymbol{\Theta}}$ is the vector of physical parameters of
-interest. The integral in
-\eq{marginalization} is over a set of \emph{nuisance parameters} $\boldsymbol{\alpha}$
-that are (generally) of no physical interest in the problem. The function
-$p (\mathbf{X} | \tilde{\boldsymbol{\Theta}},\boldsymbol{\alpha}) \, p (\boldsymbol{\alpha})$
-is not integrable analytically. Instead, since the likelihood function is only
-numerical, the integration in \eq{marginalization} is actually very expensive
-to compute. In this regime, the numerical integration algorithm of choice is
-generally Markov chain Monte Carlo (MCMC).
-Since the likelihood function is expensive to calculate, it is advantageous to
-use a sampling algorithm that reduces the necessary number of likelihood
-evaluations. This also precludes the use of second order methods (such as
-hybrid/Hamiltonian Monte Carlo) that require the calculation of (numerical)
-gradients of the likelihood function.
+where \nuisance\ is the set of ``nuisance parameters'' $\model - \physical$.
+In general and in this particular project, the computation of the integral
+in \eq{marginalization} must be done numerically and it is extremely
+computationally expensive. A standard method of computing the marginalized
+PDF is to sample \eq{posteriorprob} using Markov chain Monte Carlo
+\citep[MCMC; e.g.][]{MacKay:2003,Gregory:2005}.
 
-Most uses of MCMC in the astrophysics literature are based on slight modifications
-to the Metropolis-Hastings (M-H) method \citep[e.g.][]{MacKay:2003}. Each step in
-a M-H chain is proposed using a multivariate Gaussian centered on the current
-position of the chain. Since each term in the covariance matrix of this proposal
-distribution is an unspecified parameter, this method has $D\,[D+1]/2$ tuning parameters
-(where $D$ is the dimension of the parameter space).  To make matters worse, the
-performance of this sampler is very sensitive to the optimality of these tuning
-parameters and there is no fool-proof method for choosing the values correctly.
-As a result, many heuristic methods have been developed to attempt to determine
-the optimal parameters in a data-driven way \citep[e.g.][]{Gregory:2005,Dunkley:2005,Widrow:2008}.
-Unfortunately, these methods all require ``burn-in'' phases where shorter Markov chains
-are sampled and the results are used to tune the hyperparameters.
+To generate MCMC samples from \eq{posteriorprob}, we use an efficient
+affine-invariant ensemble sampling algorithm from \citet{Goodman:2010}. In
+particular, we make use of the open-source implementation described
+by \citet{emcee} that is available
+online\footnote{\project{emcee}: \url{http://danfm.ca/emcee}}. This algorithm
+is very well suited for this project because it significantly reduces the
+number of times that the likelihood function must be calculated to produce
+the same constraints as most standard algorithms.
+Remember that each evaluation of \eq{fulllikelihood} is the result of an
+expensive numerical calculation. Therefore, reducing the number of times
+that it must be calculated significantly reduces the running time of the
+code. The implementation that we used is also fully parallelized so we can
+take advantage of multi-CPU systems for extra speed. The details of the
+algorithm and this implementation is beyond the scope of this paper so the
+interested reader is directed to \citet{emcee} for more information.
 
-\paragraph{The stretch move}
-
-\citet{Goodman:2010} proposed an affine invariant ensemble sampling algorithm
-informally called the ``stretch move''. This method involves simultaneously
-evolving an ensemble of $K$ \emph{walkers} where the proposal distribution for one
-walker $k$ is based on the current positions of the $K-1$ walkers in the
-\emph{complementary ensemble}.
-
-In practice, to update the position of a walker at position $\mathbf{X}_k$,
-another walker $\mathbf{X}_j$ with $j \ne k$ is randomly chosen and then
-a new position is proposed:
-\begin{equation}
-    \eqlabel{proposal}
-    \mathbf{X}_k (t) \rightarrow \mathbf{Y} = \mathbf{X}_j + Z \, [\mathbf{X}_k (t) - \mathbf{X}_j]
-\end{equation}
-where $Z$ is a random variable drawn from a distribution $g(z)$.  It is clear that
-if $g(z)$ satisfies
-\begin{equation}
-    g(z^{-1}) = z \, g(z),
-\end{equation}
-the proposal of \eq{proposal} is symmetric. In this case, the chain will satisfy
-detailed balance if the proposal is accepted with probability
-\begin{equation}
-    \min \left \{ 1, Z^{n-1} \, \frac{p(\mathbf{Y})}{p(\mathbf{X}_k(t))} \right \}.
-\end{equation}
-This procedure is then repeated for each walker in the ensemble \emph{in series}.
-
-\citet{Goodman:2010} advocate for a particular form of $g(z)$, namely
-\begin{equation}
-    g(z) \propto \left \{ \begin{array}{ll}
-        \displaystyle\frac{1}{\sqrt{z}} & \mathrm{if}\, z\in \left [ \displaystyle\frac{1}{a}, a \right ], \\
-        0 & \mathrm{otherwise}
-    \end{array} \right .
-\end{equation}
-where $a$ is an adjustable scale parameter. For comparison, I will also use this
-distribution with $a=2$ for all benchmarks in this paper.
-
-\paragraph{The parallel stretch move}
-
-It is tempting to na\"ively parallelize the stretch move algorithm by
-simultaneously advancing each walker based on the state of the ensemble
-instead of evolving the walkers in series. Unfortunately, this would no longer
-satisfy detailed balance. Instead, if we split the ensemble into two ensembles
-(labeled \emph{blue} and \emph{red} for convenience) and simultaneously update
-all the blue walkers --- using the stretch move procedure --- based on the
-positions of \emph{only the
-red walkers} then the outcome is a valid step for each of the walkers. Then,
-the red walkers are advanced based only on the positions in the blue ensemble.
-
-The performance of this method --- quantified by the autocorrelation time ---
-is comparable to the traditional stretch move algorithm but the fact that one
-can now take advantage of generic parallelization makes this generalization
-extremely powerful.
 
 \section{Results}
 
@@ -750,22 +699,6 @@ are inconsistent and also unphysical.
 
 (LW: Comment on stability here)
 
-
-\subsection{Theoretical mass-to-light ratios from stellar population
-    synthesis}
-
-A further constraint is clearly necessary to make this procedure more
-meaningful. We apply a prior on the mass-to-light ratio of the disk based
-on the stellar population models of \citet{Bell:2003}.
-
-(LW: fill in the comments about the derivation of the M/L prior)
-
-We perform the same analysis as in the previous section with the added
-informative uniform prior on the disk mass-to-light ratio. This physically
-motivated addition is enough to mostly solve the problems listed above. By
-construction, the disk mass is reduced, yielding a more dynamically stable
-solution but more interestingly, it produces a mass profile that is physically
-reasonable over the full range of radii.
 
 \subsection{Constraints on the physical galaxy parameters}
 
@@ -885,6 +818,7 @@ code and data used in this project are available from the authors upon
 request.
 
 % -------- REFERENCES --------
+\newcommand{\arxiv}[1]{\href{http://arxiv.org/abs/#1}{arXiv:#1}}
 
 \bibliographystyle{apj}
 
@@ -896,7 +830,7 @@ request.
 \bibitem[{{Bahcall} \& {Tremaine}(1981)}]{Bahcall:1981}
 {Bahcall}, J.~N., \& {Tremaine}, S. 1981, \apj, 244, 805
 
-\bibitem[{{Bell} {et~al.}(2003){Bell}, {McIntosh}, {Katz}, \&
+\bibitem[{{Bell} {\etal}(2003){Bell}, {McIntosh}, {Katz}, \&
   {Weinberg}}]{Bell:2003}
 {Bell}, E.~F., {McIntosh}, D.~H., {Katz}, N., \& {Weinberg}, M.~D. 2003, \apjs,
   149, 289
@@ -908,14 +842,14 @@ request.
 \bibitem[{{Braun}(1991)}]{Braun:1991}
 {Braun}, R. 1991, \apj, 372, 54
 
-\bibitem[{{Chemin} {et~al.}(2009){Chemin}, {Carignan}, \&
+\bibitem[{{Chemin} {\etal}(2009){Chemin}, {Carignan}, \&
   {Foster}}]{Chemin:2009}
 {Chemin}, L., {Carignan}, C., \& {Foster}, T. 2009, \apj, 705, 1395
 
-\bibitem[{{Collins} {et~al.}(2010){Collins}, {Chapman}, {Irwin}, {Martin},
+\bibitem[{{Collins} {\etal}(2010){Collins}, {Chapman}, {Irwin}, {Martin},
   {Ibata}, {Zucker}, {Blain}, {Ferguson}, {Lewis}, {McConnachie}, \&
   {Pe{\~n}arrubia}}]{Collins:2010}
-{Collins}, M.~L.~M., {et~al.} 2010, \mnras, 407, 2411
+{Collins}, M.~L.~M., {\etal} 2010, \mnras, 407, 2411
 
 \bibitem[{{Courteau} \& {Rix}(1999)}]{Courteau:1999a}
 {Courteau}, S., \& {Rix}, H.-W. 1999, \apj, 513, 561
@@ -926,7 +860,7 @@ request.
 \bibitem[{{de Vaucouleurs}(1958)}]{de-Vaucouleurs:1958}
 {de Vaucouleurs}, G. 1958, \apj, 128, 465
 
-\bibitem[{{de Vaucouleurs} {et~al.}(1991){de Vaucouleurs}, {de Vaucouleurs},
+\bibitem[{{de Vaucouleurs} {\etal}(1991){de Vaucouleurs}, {de Vaucouleurs},
   {Corwin}, {Buta}, {Paturel}, \& {Fouque}}]{de-Vaucouleurs:1991}
 {de Vaucouleurs}, G., {de Vaucouleurs}, A., {Corwin}, Jr., H.~G., {Buta},
   R.~J., {Paturel}, G., \& {Fouque}, P. 1991, {Third Reference Catalogue of
@@ -936,7 +870,7 @@ request.
 \bibitem[{{Deharveng} \& {Pellet}(1975)}]{Deharveng:1975}
 {Deharveng}, J.~M., \& {Pellet}, A. 1975, \aap, 38, 15
 
-\bibitem[{{Dunkley} {et~al.}(2005){Dunkley}, {Bucher}, {Ferreira}, {Moodley},
+\bibitem[{{Dunkley} {\etal}(2005){Dunkley}, {Bucher}, {Ferreira}, {Moodley},
   \& {Skordis}}]{Dunkley:2005}
 {Dunkley}, J., {Bucher}, M., {Ferreira}, P.~G., {Moodley}, K., \& {Skordis}, C.
   2005, \mnras, 356, 925
@@ -944,15 +878,18 @@ request.
 \bibitem[{{Evans} \& {Wilkinson}(2000)}]{ew}
 {Evans}, N.~W., \& {Wilkinson}, M.~I. 2000, \mnras, 316, 929
 
-\bibitem[{{Evans} {et~al.}(2000){Evans}, {Wilkinson}, {Guhathakurta}, {Grebel},
+\bibitem[{{Evans} {\etal}(2000){Evans}, {Wilkinson}, {Guhathakurta}, {Grebel},
   \& {Vogt}}]{Evans:2000a}
 {Evans}, N.~W., {Wilkinson}, M.~I., {Guhathakurta}, P., {Grebel}, E.~K., \&
   {Vogt}, S.~S. 2000, \apjl, 540, L9
 
-\bibitem[{{Evans} {et~al.}(2003){Evans}, {Wilkinson}, {Perrett}, \&
+\bibitem[{{Evans} {\etal}(2003){Evans}, {Wilkinson}, {Perrett}, \&
   {Bridges}}]{Evans:2003}
 {Evans}, N.~W., {Wilkinson}, M.~I., {Perrett}, K.~M., \& {Bridges}, T.~J. 2003,
   \apj, 583, 752
+
+\bibitem[Foreman-Mackey \etal(2012)]{emcee} Foreman-Mackey,
+D., Hogg, D.~W., Lang, D., \& Goodman, J.\ 2012, \arxiv{1202.3665} [astro-ph.IM]
 
 \bibitem[{Goodman \& Weare(2010)}]{Goodman:2010}
 Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
@@ -968,17 +905,17 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 \bibitem[{{Hartwick} \& {Sargent}(1974)}]{Hartwick:1974}
 {Hartwick}, F.~D.~A., \& {Sargent}, W.~L.~W. 1974, \apj, 190, 283
 
-\bibitem[{{Ibata} {et~al.}(2007){Ibata}, {Martin}, {Irwin}, {Chapman},
+\bibitem[{{Ibata} {\etal}(2007){Ibata}, {Martin}, {Irwin}, {Chapman},
   {Ferguson}, {Lewis}, \& {McConnachie}}]{Ibata:2007}
 {Ibata}, R., {Martin}, N.~F., {Irwin}, M., {Chapman}, S., {Ferguson}, A.~M.~N.,
   {Lewis}, G.~F., \& {McConnachie}, A.~W. 2007, \apj, 671, 1591
 
-\bibitem[{{Kalirai} {et~al.}(2010){Kalirai}, {Beaton}, {Geha}, {Gilbert},
+\bibitem[{{Kalirai} {\etal}(2010){Kalirai}, {Beaton}, {Geha}, {Gilbert},
   {Guhathakurta}, {Kirby}, {Majewski}, {Ostheimer}, {Patterson}, \&
   {Wolf}}]{Kalirai:2010}
-{Kalirai}, J.~S., {et~al.} 2010, \apj, 711, 671
+{Kalirai}, J.~S., {\etal} 2010, \apj, 711, 671
 
-\bibitem[{{Klypin} {et~al.}(2002){Klypin}, {Zhao}, \& {Somerville}}]
+\bibitem[{{Klypin} {\etal}(2002){Klypin}, {Zhao}, \& {Somerville}}]
     {Klypin:2002}
 {Klypin}, A., {Zhao}, H., \& {Somerville}, R.~S.,
 2002, \apj, 573, 597
@@ -986,17 +923,17 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 \bibitem[{{Kuijken} \& {Dubinski}(1995)}]{Kuijken:1995}
 {Kuijken}, K., \& {Dubinski}, J. 1995, \mnras, 277, 1341
 
-\bibitem[{{Lee} {et~al.}(2008){Lee}, {Hwang}, {Kim}, {Park}, {Geisler},
+\bibitem[{{Lee} {\etal}(2008){Lee}, {Hwang}, {Kim}, {Park}, {Geisler},
   {Sarajedini}, \& {Harris}}]{Lee:2008}
 {Lee}, M.~G., {Hwang}, H.~S., {Kim}, S.~C., {Park}, H.~S., {Geisler}, D.,
   {Sarajedini}, A., \& {Harris}, W.~E. 2008, \apj, 674, 886
 
-\bibitem[{{Letarte} {et~al.}(2009){Letarte}, {Chapman}, {Collins}, {Ibata},
+\bibitem[{{Letarte} {\etal}(2009){Letarte}, {Chapman}, {Collins}, {Ibata},
   {Irwin}, {Ferguson}, {Lewis}, {Martin}, {McConnachie}, \&
   {Tanvir}}]{Letarte:2009}
-{Letarte}, B., {et~al.} 2009, \mnras, 400, 1472
+{Letarte}, B., {\etal} 2009, \mnras, 400, 1472
 
-\bibitem[{{Loeb} {et~al.}(2005){Loeb}, {Reid}, {Brunthaler}, \&
+\bibitem[{{Loeb} {\etal}(2005){Loeb}, {Reid}, {Brunthaler}, \&
   {Falcke}}]{Loeb:2005}
 {Loeb}, A., {Reid}, M.~J., {Brunthaler}, A., \& {Falcke}, H. 2005, \apj, 633,
   894
@@ -1005,12 +942,12 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 {MacKay}, D. J.~C. 2003, Information Theory, Inference, and Learning Algorithms
   (Cambridge University Press)
 
-\bibitem[{{Majewski} {et~al.}(2007){Majewski}, {Beaton}, {Patterson},
+\bibitem[{{Majewski} {\etal}(2007){Majewski}, {Beaton}, {Patterson},
   {Kalirai}, {Geha}, {Mu{\~n}oz}, {Seigar}, {Guhathakurta}, {Gilbert}, {Rich},
   {Bullock}, \& {Reitzel}}]{Majewski:2007}
-{Majewski}, S.~R., {et~al.} 2007, \apjl, 670, L9
+{Majewski}, S.~R., {\etal} 2007, \apjl, 670, L9
 
-\bibitem[{{Martin} {et~al.}(2006){Martin}, {Ibata}, {Irwin}, {Chapman},
+\bibitem[{{Martin} {\etal}(2006){Martin}, {Ibata}, {Irwin}, {Chapman},
   {Lewis}, {Ferguson}, {Tanvir}, \& {McConnachie}}]{Martin:2006}
 {Martin}, N.~F., {Ibata}, R.~A., {Irwin}, M.~J., {Chapman}, S., {Lewis}, G.~F.,
   {Ferguson}, A.~M.~N., {Tanvir}, N., \& {McConnachie}, A.~W. 2006, \mnras,
@@ -1019,7 +956,7 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 \bibitem[{{McConnachie} \& {Irwin}(2006)}]{McConnachie:2006}
 {McConnachie}, A.~W., \& {Irwin}, M.~J. 2006, \mnras, 365, 902
 
-\bibitem[{{McConnachie} {et~al.}(2005){McConnachie}, {Irwin}, {Ferguson},
+\bibitem[{{McConnachie} {\etal}(2005){McConnachie}, {Irwin}, {Ferguson},
   {Ibata}, {Lewis}, \& {Tanvir}}]{McConnachie:2005}
 {McConnachie}, A.~W., {Irwin}, M.~J., {Ferguson}, A.~M.~N., {Ibata}, R.~A.,
   {Lewis}, G.~F., \& {Tanvir}, N. 2005, \mnras, 356, 979
@@ -1027,10 +964,10 @@ Goodman, J., \& Weare, J. 2010, Comm. App. Math. Comp. Sci., 5, 65
 \bibitem[Merritt et al.(2006)]{Merritt:2006} Merritt, D., Graham,
 A.~W., Moore, B., Diemand, J., \& Terzi{\'c}, B.\ 2006, \aj, 132, 2685
 
-\bibitem[{{Metz} {et~al.}(2007){Metz}, {Kroupa}, \& {Jerjen}}]{Metz:2007}
+\bibitem[{{Metz} {\etal}(2007){Metz}, {Kroupa}, \& {Jerjen}}]{Metz:2007}
 {Metz}, M., {Kroupa}, P., \& {Jerjen}, H. 2007, \mnras, 374, 1125
 
-\bibitem[Navarro et~al.(2010)]{Navarro:2010} Navarro, J.~F., Ludlow,
+\bibitem[Navarro \etal(2010)]{Navarro:2010} Navarro, J.~F., Ludlow,
 A., Springel, V., et al.\ 2010, \mnras, 402, 21
 
 \bibitem[{O'Hagan \& Leonard(1976)}]{OHagan:1976a}
@@ -1045,7 +982,7 @@ O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
 \bibitem[{{Rubin} \& {Ford}(1970)}]{Rubin:1970}
 {Rubin}, V.~C., \& {Ford}, Jr., W.~K. 1970, \apj, 159, 379
 
-\bibitem[{{Sales} {et~al.}(2007){Sales}, {Navarro}, {Abadi}, \&
+\bibitem[{{Sales} {\etal}(2007){Sales}, {Navarro}, {Abadi}, \&
   {Steinmetz}}]{Sales:2007b}
 {Sales}, L.~V., {Navarro}, J.~F., {Abadi}, M.~G., \& {Steinmetz}, M. 2007,
   \mnras, 379, 1464
@@ -1059,13 +996,13 @@ O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
 \bibitem[{{van der Marel} \& {Guhathakurta}(2008)}]{vdm}
 {van der Marel}, R.~P., \& {Guhathakurta}, P. 2008, \apj, 678, 187
 
-\bibitem[{{Watkins} {et~al.}(2010){Watkins}, {Evans}, \& {An}}]{Watkins:2010}
+\bibitem[{{Watkins} {\etal}(2010){Watkins}, {Evans}, \& {An}}]{Watkins:2010}
 {Watkins}, L.~L., {Evans}, N.~W., \& {An}, J.~H. 2010, \mnras, 406, 264
 
-\bibitem[{{Widrow} {et~al.}(2008){Widrow}, {Pym}, \& {Dubinski}}]{Widrow:2008}
+\bibitem[{{Widrow} {\etal}(2008){Widrow}, {Pym}, \& {Dubinski}}]{Widrow:2008}
 {Widrow}, L.~M., {Pym}, B., \& {Dubinski}, J. 2008, \apj, 679, 1239
 
-\bibitem[{{York} {et~al.}(2000){York}, {Adelman}, {Anderson}, {Anderson},
+\bibitem[{{York} {\etal}(2000){York}, {Adelman}, {Anderson}, {Anderson},
   {Annis}, {Bahcall}, {Bakken}, {Barkhouser}, {Bastian}, {Berman}, {Boroski},
   {Bracker}, {Briegel}, {Briggs}, {Brinkmann}, {Brunner}, {Burles}, {Carey},
   {Carr}, {Castander}, {Chen}, {Colestock}, {Connolly}, {Crocker}, {Csabai},
@@ -1087,16 +1024,16 @@ O'Hagan, A., \& Leonard, T. 1976, Biometrika, 63, 201
   {SubbaRao}, {Szalay}, {Szapudi}, {Szokoly}, {Thakar}, {Tremonti}, {Tucker},
   {Uomoto}, {Vanden Berk}, {Vogeley}, {Waddell}, {Wang}, {Watanabe},
   {Weinberg}, {Yanny}, \& {Yasuda}}]{York:2000}
-{York}, D.~G., {et~al.} 2000, \aj, 120, 1579
+{York}, D.~G., {\etal} 2000, \aj, 120, 1579
 
-\bibitem[{{Zucker} {et~al.}(2004){Zucker}, {Kniazev}, {Bell},
+\bibitem[{{Zucker} {\etal}(2004){Zucker}, {Kniazev}, {Bell},
   {Mart{\'{\i}}nez-Delgado}, {Grebel}, {Rix}, {Rockosi}, {Holtzman},
   {Walterbos}, {Annis}, {York}, {Ivezi{\'c}}, {Brinkmann}, {Brewington},
   {Harvanek}, {Hennessy}, {Kleinman}, {Krzesinski}, {Long}, {Newman}, {Nitta},
   \& {Snedden}}]{Zucker:2004}
-{Zucker}, D.~B., {et~al.} 2004, \apjl, 612, L121
+{Zucker}, D.~B., {\etal} 2004, \apjl, 612, L121
 
-\bibitem[{{Zucker} {et~al.}(2007){Zucker}, {Kniazev},
+\bibitem[{{Zucker} {\etal}(2007){Zucker}, {Kniazev},
   {Mart{\'{\i}}nez-Delgado}, {Bell}, {Rix}, {Grebel}, {Holtzman}, {Walterbos},
   {Rockosi}, {York}, {Barentine}, {Brewington}, {Brinkmann}, {Harvanek},
   {Kleinman}, {Krzesinski}, {Long}, {Neilsen}, {Nitta}, \&
