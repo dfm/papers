@@ -1,0 +1,83 @@
+\documentclass[preprint,12pt]{aastex}
+
+\usepackage{color,hyperref}
+\definecolor{linkcolor}{rgb}{0,0,0.5}
+\hypersetup{colorlinks=true,linkcolor=linkcolor,citecolor=linkcolor,
+            filecolor=linkcolor,urlcolor=linkcolor}
+
+\usepackage{url}
+\usepackage{algorithmic,algorithm}
+
+\usepackage{listings}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{%
+    language=Python,
+    basicstyle=\footnotesize\ttfamily,
+    showspaces=false,
+    showstringspaces=false,
+    tabsize=2,
+    breaklines=false,
+    breakatwhitespace=true,
+    identifierstyle=\ttfamily,
+    keywordstyle=\bfseries\color[rgb]{0.133,0.545,0.133},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+
+\input{../dfmvars}
+
+\begin{document}
+
+\title{Sick transit likelihood function\ldots}
+
+\newcommand{\nyu}{2}
+\newcommand{\mpia}{3}
+\author{%
+    Daniel~Foreman-Mackey\altaffilmark{1,\nyu},
+    David~W.~Hogg\altaffilmark{\nyu,\mpia},
+    \etal
+}
+\altaffiltext{1}{To whom correspondence should be addressed:
+                        \url{danfm@nyu.edu}}
+\altaffiltext{\nyu}{Center for Cosmology and Particle Physics,
+                        Department of Physics, New York University,
+                        4 Washington Place, New York, NY, 10003, USA}
+\altaffiltext{\mpia}{Max-Planck-Institut f\"ur Astronomie,
+                        K\"onigstuhl 17, D-69117 Heidelberg, Germany}
+
+\begin{abstract}
+
+
+\end{abstract}
+
+\keywords{%
+exoplanets: sickness
+---
+code: open-source
+---
+keywords: made-up-by-Hogg
+}
+
+\section{Introduction}
+
+
+\acknowledgments
+SAMSI. %
+It is a pleasure to thank
+    Fengji Hou (NYU),
+for helpful contributions to the ideas and code presented here.
+This project was partially supported by the NSF (grant AST-0908357), and NASA
+(grant NNX08AJ48G).
+
+\newcommand{\arxiv}[1]{\href{http://arxiv.org/abs/#1}{arXiv:#1}}
+\begin{thebibliography}{}\raggedright
+
+\bibitem[Bishop(2003)]{bishop-book}
+Bishop, C.~M., \emph{Pattern Recognition and Machine Learning}, Springer, 2009
+
+\bibitem[Gibson \etal(2012)]{gibson-gp}
+Gibson, N.~P., Aigrain, S., Roberts, S., \etal\ 2012, \mnras, 419, 2683
+
+\end{thebibliography}
+
+\end{document}
