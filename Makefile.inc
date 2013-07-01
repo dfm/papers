@@ -6,7 +6,6 @@ TMP_SUFFS   = pdf aux bbl blg log dvi ps eps out
 CHECK_RERUN = grep Rerun $*.log
 
 %.pdf: %.tex
-	cp ../dfm.cls dfm.cls
 	${LATEX} $<
 	( ${CHECK_RERUN} && ${LATEX} $< ) || echo "Done."
 	( ${CHECK_RERUN} && ${LATEX} $< ) || echo "Done."
