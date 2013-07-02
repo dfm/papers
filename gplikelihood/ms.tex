@@ -26,6 +26,8 @@
 
 \input{../dfmvars}
 
+\newcommand{\kepler}{\project{Kepler}}
+
 \begin{document}
 
 \title{Sick transit likelihood function\ldots}
@@ -48,6 +50,7 @@
 \begin{abstract}
 
 
+
 \end{abstract}
 
 \keywords{%
@@ -59,6 +62,22 @@ keywords: made-up-by-Hogg
 }
 
 \section{Introduction}
+
+The NASA \kepler\ Mission is a space telescope designed to detect
+\emph{Earth-like} transiting planets orbiting---on close to year-long
+periods---around \emph{Sun-like} stars \citep{kepler}.
+The photometric precision of the instrument is unprecedented (CITE) and
+careful mining analysis of the data stream has lead to many impressive
+discoveries (CITE).
+While several nearly Earth-sized planets have been discovered recently (which
+ones?), these signals are at the edge of the instrument's capabilities and
+there are systematic signals---both astrophysical and instrumental---that are
+of much larger magnitude than the transit signature.
+As a result, one must carefully model the systematic effects as well as the
+planetary signals.
+In the standard lore, this procedure involves a ``de-trending'' step followed
+by a ``modeling'' step.
+
 
 \begin{itemize}
 
@@ -140,6 +159,9 @@ Bishop, C.~M., \emph{Pattern Recognition and Machine Learning}, Springer, 2009
 
 \bibitem[Gibson \etal(2012)]{gibson-gp}
 Gibson, N.~P., Aigrain, S., Roberts, S., \etal\ 2012, \mnras, 419, 2683
+
+\bibitem[Koch \etal(2010)]{kepler}
+Koch, D.~G., Borucki, W.~J., Basri, G., \etal\ 2010, \apjl, 713, L79
 
 \end{thebibliography}
 
